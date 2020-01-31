@@ -1,3 +1,30 @@
+[General]
+capture_frames = 10
+n_camera = 1
+smoothing_filter = 1
+sensor_id = "Camera0"
+
+[Camera0_Factory]
+fx = 626.3919067382812
+fy = 626.197509765625
+cx = 338.2691955566406
+cy = 230.717041015625
+p1 = 0.0003754382196348161
+p2 = -0.0008372970623895526
+k1 = -0.1207522973418236
+k2 = 0.1235699504613876
+k3 = 0.1594152748584747
+k4 = 0.1318869143724442
+k5 = 0
+k6 = 0
+
+[Camera0]
+camera_name = "camera0"
+serial_no = "PD71A1CGD3280049P"
+range1 = 0
+range2 = -1
+rgb_image = 1
+
 [Undistortion]
 y_min = -0.8100000000000001
 y_max = 0.8100000000000001
@@ -12,6 +39,7 @@ x_grid_scale = 0.01
 
 [Camera0]
 range2 = -1
+
 camera_name = "camera0"
 serial_no = "PD71A1CGD3280049P"
 rgb_image = 1
