@@ -5,19 +5,20 @@ import numpy
 import sys
 import os
 import glob
+import pdb
 
 ZENSE_LIB_DIR = "/home/{}/Libraries/PicoZenseSDK/Lib/x64".format(os.environ.get('USER'))
 ZENSE_INCLUDE_DIR = "/home/{}/Libraries/PicoZenseSDK/Include".format(os.environ.get('USER'))
 
-lib_folder = os.path.join(sys.prefix, 'lib')
-lib_dirs = [lib_folder, ZENSE_LIB_DIR]
+cvlib_folder = os.path.join(sys.prefix,'local', 'lib')
+lib_dirs = [cvlib_folder, ZENSE_LIB_DIR]
 
 cvlibs = list()
-for file in glob.glob(os.path.join(lib_folder, 'libopencv_*')):
+for file in glob.glob(os.path.join(cvlib_folder, 'libopencv_*')):
     cvlibs.append(file.split('.')[0])
 cvlibs = list(set(cvlibs))
 cvlibs = ['opencv_{}'.format(lib.split(os.path.sep)[-1].split('libopencv_')[-1]) for lib in cvlibs]
-
+pdb.set_trace()
 setup(
     name = "zense_pywrapper",
     ext_modules = cythonize(
@@ -36,7 +37,7 @@ setup(
                         include_dirs=[numpy.get_include(),
                                         os.path.join(sys.prefix, 'include', 'opencv2'),
                                         ],
-                        library_dirs=[lib_folder],
+                        library_dirs=lib_dirs,
                         libraries=cvlibs,
                         language="c++"                    
                     )                    
