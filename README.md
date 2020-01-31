@@ -20,3 +20,15 @@ python setup.py build_ext --inplace
 # Scripts
  - main.py : Generate TOML setting File
  - capture.py : Scripts to capture RGB-D images using Pico Zense
+
+# Usage of capture.py
+1. Connect your PicoZense and Wait until its Green LED turns on
+2. Generate TOML setting file
+```
+python main.py
+```
+3. Run capture the script
+```
+python capture.py
+```
+
