@@ -7,7 +7,7 @@ from collections import OrderedDict
 import pdb
 
 @click.command()
-@click.option('--out', '-o', default='./cfg/camera_parameter.toml')
+@click.option('--out', '-o', default='./camera_parameter.toml')
 def main(out):
     zense = PyPicoZenseManager()
     

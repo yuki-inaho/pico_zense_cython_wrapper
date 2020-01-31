@@ -76,6 +76,7 @@ cdef class PyPicoZenseManager:
             depthImg = self.thisptr.getDepthImage()
             self.rgbImg_npy = Mat2np(rgbImg)
             self.depthImg_npy = Mat2np(depthImg)
+        return status
 
     def getCameraParameter(self):
         return self.thisptr.getCameraParameter()
@@ -83,9 +84,9 @@ cdef class PyPicoZenseManager:
     def getSerialNumber(self):
         return self.thisptr.getSerialNumber()
 
-    def getRGBMat(self):
+    def getRGBImage(self):
         return self.rgbImg_npy
 
-    def getDepthMat(self):
+    def getDepthImage(self):
         return self.depthImg_npy
 

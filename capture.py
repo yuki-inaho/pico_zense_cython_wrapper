@@ -48,7 +48,7 @@ def getIntrinsicParam(toml_dict, camera_name):
     return intrinsic_param
 
 ###
-### main rootin
+### main routine
 ### 
 
 #mkdir
@@ -100,8 +100,7 @@ def main():
     key = cv2.waitKey(20)
 
     while ((key & 0xFF != ord('q')) or (key & 0xFF != 27)):
-        status = zense_mng.update()
-
+        status = zense_mng.updateDevice()
         if status:
             rgb_img = zense_mng.getRGBImage()
             depth_img = zense_mng.getDepthImage()

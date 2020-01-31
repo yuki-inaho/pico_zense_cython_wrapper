@@ -18,7 +18,7 @@ for file in glob.glob(os.path.join(cvlib_folder, 'libopencv_*')):
     cvlibs.append(file.split('.')[0])
 cvlibs = list(set(cvlibs))
 cvlibs = ['opencv_{}'.format(lib.split(os.path.sep)[-1].split('libopencv_')[-1]) for lib in cvlibs]
-pdb.set_trace()
+
 setup(
     name = "zense_pywrapper",
     ext_modules = cythonize(
