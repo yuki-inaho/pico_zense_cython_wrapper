@@ -1,2 +1,7 @@
-cython==0.29.15
-pkgconfig==1.5.1
+toml
+opencv-python
+cvui
+numpy
+cython
+click
+json
