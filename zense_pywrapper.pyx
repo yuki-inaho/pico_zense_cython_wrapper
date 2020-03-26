@@ -11,7 +11,6 @@ import numpy as np
 cimport numpy as np
 import opencv_mat
 from opencv_mat cimport *
-import pdb
 
 
 cdef extern from "opencv2/opencv.hpp":
@@ -44,10 +43,10 @@ cdef extern from "Python.h":
 
 cdef extern from "pico_zense_manager.hpp" namespace "zense":
     cdef cppclass PicoZenseManager:
-        PicoZenseManager() except +
+        PicoZenseManager(int device_idx) except +
         string getSerialNumber()
         vector[double] getCameraParameter()
-        bool updateDevice()
+        bool update()
         Mat getRGBImage()
         Mat getDepthImage()
 
@@ -57,19 +56,19 @@ cdef class PyPicoZenseManager:
     cdef object rgbImg_npy
     cdef object depthImg_npy
 
-    def __cinit__(self):
-        self.thisptr = new PicoZenseManager()
+    def __cinit__(self, device_idx):
+        self.thisptr = new PicoZenseManager(device_idx)
 
     def __dealloc__(self):
         del self.thisptr
 
-    def updateDevice(self):
+    def update(self):
         cdef bool status
         cdef Mat rgbImg
         cdef Mat depthImg
         cdef object rgbImg_npy
         cdef object depthImg_npy
-        status = self.thisptr.updateDevice()
+        status = self.thisptr.update()
 
         if status:
             rgbImg = self.thisptr.getRGBImage()

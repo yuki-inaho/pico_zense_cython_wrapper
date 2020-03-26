@@ -100,7 +100,7 @@ def main():
     key = cv2.waitKey(20)
 
     while ((key & 0xFF != ord('q')) or (key & 0xFF != 27)):
-        status = zense_mng.updateDevice()
+        status = zense_mng.update()
         if status:
             rgb_img = zense_mng.getRGBImage()
             depth_img = zense_mng.getDepthImage()

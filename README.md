@@ -20,18 +20,12 @@ export PICOZENSE_PATH="$HOME/Libraries/PicoZenseSDK"
 export LD_LIBRARY_PATH="$PICOZENSE_PATH/Lib/x64:$LD_LIBRARY_PATH"
 ```
 
-3. Install python dependency
+4. Install python dependency
 ```
 pip install -r requirements.txt
 ```
 
-4. Change below two lines in "setup.py" to your PicoZenseSDK Locations.
-```
-ZENSE_LIB_DIR = "/home/{}/Libraries/PicoZenseSDK/Lib/x64".format(os.environ.get('USER'))
-ZENSE_INCLUDE_DIR = "/home/{}/Libraries/PicoZenseSDK/Include".format(os.environ.get('USER'))
-```
-
-3. Build cython code
+5. Build cython code
 ```
 python setup.py build_ext --inplace
 ```
