@@ -6,12 +6,13 @@ import sys
 import os
 import glob
 import pdb
+import pkgconfig
 
-ZENSE_LIB_DIR = "/home/{}/Libraries/PicoZenseSDK/Lib/x64".format(os.environ.get('USER'))
-ZENSE_INCLUDE_DIR = "/home/{}/Libraries/PicoZenseSDK/Include".format(os.environ.get('USER'))
+zense_cflags = pkgconfig.cflags('libpicozense')
+zense_libs = pkgconfig.libs('libpicozense')
 
 cvlib_folder = os.path.join(sys.prefix,'local', 'lib')
-lib_dirs = [cvlib_folder, ZENSE_LIB_DIR]
+lib_dirs = [cvlib_folder]
 
 cvlibs = list()
 for file in glob.glob(os.path.join(cvlib_folder, 'libopencv_*')):
@@ -20,27 +21,22 @@ cvlibs = list(set(cvlibs))
 cvlibs = ['opencv_{}'.format(lib.split(os.path.sep)[-1].split('libopencv_')[-1]) for lib in cvlibs]
 
 setup(
-    name = "zense_pywrapper",
+    name = "zense_pywrapper_for_serial",
+
+    version='1.0.0',
+    description='serial number getter for zense',
+    author='yuki yoshikawa',
+
     ext_modules = cythonize(
                  [
-                    Extension("zense_pywrapper",
-                        sources=["zense_pywrapper.pyx", "pico_zense_manager.cpp"],
-                        extra_compile_args=["-std=gnu++11", "-O3"],
-                        include_dirs=[ZENSE_INCLUDE_DIR],
+                    Extension("zense_pywrapper_for_serial",
+                        sources=["src/zense_pywrapper_for_serial.pyx", "src/pico_zense_module_for_serial.cpp"],
+                        extra_compile_args=["-std=gnu++11", "-O3", zense_cflags, zense_libs],
+                        include_dirs=[numpy.get_include()],
                         library_dirs=lib_dirs,
                         libraries= cvlibs + ["picozense_api"],
                         language="c++",
-                    ),
-
-                    Extension("opencv_mat",
-                        sources=["opencv_mat.pyx"],
-                        include_dirs=[numpy.get_include(),
-                                        os.path.join(sys.prefix, 'include', 'opencv2'),
-                                        ],
-                        library_dirs=lib_dirs,
-                        libraries=cvlibs,
-                        language="c++"                    
-                    )                    
+                    )
                  ]
     ),
     cmdclass = {'build_ext': build_ext},
