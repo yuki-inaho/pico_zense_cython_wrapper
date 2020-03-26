@@ -28,6 +28,7 @@ pip install -r requirements.txt
 5. Build cython code
 ```
 python setup.py install
+(or python setup.py install --user)
 ```
 
 # Scripts
