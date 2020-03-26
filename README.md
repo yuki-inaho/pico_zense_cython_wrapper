@@ -1,12 +1,31 @@
 # Installation
 1. Install PicoZenseSDK from https://www.picozense.com/en/sdk.html
 
-2. Install python dependency
+2. Create /usr/lib/pkgconfig/libpicozense.pc:
+```
+prefix=/home/[*** put your PicoZenseSDK install location here ***]
+exec_prefix=${prefix}
+includedir=${prefix}/Include
+libdir=${exec_prefix}/Lib/x64
+Name: libpicozense
+Description: The Library for Pico Zense
+Version: 1.0.0
+Cflags: -I${includedir}/
+Libs: -L${libdir} -lpicozense_api
+```
+
+3. Write and add below settings to your ~/.bashrc or something.
+```
+export PICOZENSE_PATH="$HOME/Libraries/PicoZenseSDK"
+export LD_LIBRARY_PATH="$PICOZENSE_PATH/Lib/x64:$LD_LIBRARY_PATH"
+```
+
+3. Install python dependency
 ```
 pip install -r requirements.txt
 ```
 
-3. Change below two lines in "setup.py" to your PicoZenseSDK Locations.
+4. Change below two lines in "setup.py" to your PicoZenseSDK Locations.
 ```
 ZENSE_LIB_DIR = "/home/{}/Libraries/PicoZenseSDK/Lib/x64".format(os.environ.get('USER'))
 ZENSE_INCLUDE_DIR = "/home/{}/Libraries/PicoZenseSDK/Include".format(os.environ.get('USER'))
