@@ -4,5 +4,4 @@ cvui
 numpy
 cython
 click
-json
 pkgconfig
