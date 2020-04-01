@@ -48,6 +48,7 @@ cdef extern from "pico_zense_manager.hpp" namespace "zense":
         vector[double] getCameraParameter()
         bool update()
         Mat getRGBImage()
+        Mat getIRImage()        
         Mat getDepthImage()
 
 
@@ -65,15 +66,19 @@ cdef class PyPicoZenseManager:
     def update(self):
         cdef bool status
         cdef Mat rgbImg
+        cdef Mat irImg
         cdef Mat depthImg
         cdef object rgbImg_npy
+        cdef object irImg_npy
         cdef object depthImg_npy
         status = self.thisptr.update()
 
         if status:
             rgbImg = self.thisptr.getRGBImage()
+            irImg = self.thisptr.getIRImage()            
             depthImg = self.thisptr.getDepthImage()
             self.rgbImg_npy = Mat2np(rgbImg)
+            self.irImg_npy = Mat2np(irImg)            
             self.depthImg_npy = Mat2np(depthImg)
         return status
 
@@ -85,6 +90,9 @@ cdef class PyPicoZenseManager:
 
     def getRGBImage(self):
         return self.rgbImg_npy
+
+    def getRGBImage(self):
+        return self.irImg_npy
 
     def getDepthImage(self):
         return self.depthImg_npy
