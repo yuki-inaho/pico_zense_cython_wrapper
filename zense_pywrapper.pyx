@@ -55,6 +55,7 @@ cdef extern from "pico_zense_manager.hpp" namespace "zense":
 cdef class PyPicoZenseManager:
     cdef PicoZenseManager *thisptr  
     cdef object rgbImg_npy
+    cdef object irImg_npy
     cdef object depthImg_npy
 
     def __cinit__(self, device_idx):
@@ -91,7 +92,7 @@ cdef class PyPicoZenseManager:
     def getRGBImage(self):
         return self.rgbImg_npy
 
-    def getRGBImage(self):
+    def getIRImage(self):
         return self.irImg_npy
 
     def getDepthImage(self):
