@@ -19,13 +19,18 @@ Libs: -L${libdir} -lpicozense_api
 export PICOZENSE_PATH="$HOME/Libraries/PicoZenseSDK"
 export LD_LIBRARY_PATH="$PICOZENSE_PATH/Lib/x64:$LD_LIBRARY_PATH"
 ```
+4. git clone this repository and move current working space to cloned directory
+```
+git clone https://github.com/yuki-inaho/pico_zense_cython_wrapper.git
+cd pico_zense_cython_wrapper
+```
 
-4. Install python dependency
+5. Install python dependency
 ```
 pip install -r requirements.txt
 ```
 
-5. Build cython code
+6. Build cython code
 ```
 python setup.py install
 (or python setup.py install --user)
