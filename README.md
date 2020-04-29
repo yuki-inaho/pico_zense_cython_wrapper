@@ -32,7 +32,7 @@ pip install -r requirements.txt
 
 6. Build cython code
 ```
-python setup.py install
+sudo python setup.py install
 (or python setup.py install --user)
 ```
 
