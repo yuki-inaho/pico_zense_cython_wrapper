@@ -20,7 +20,7 @@ def main(out):
     dict_toml = toml.load(open('{}/../cfg/template.toml'.format(SCRIPT_PATH)),
                           _dict=OrderedDict, decoder=decoder)
 
-    dict_toml["Camera0"]["serial_no"] = zense.getSerialNumber()
+    dict_toml["Camera0"]["serial_no"] = zense.getSerialNumber().encode('utf-8')
     intrinsic_depth_params = zense.getCameraParameter()
     intrinsic_rgb_params = zense.getRGBCameraParameter()
 
