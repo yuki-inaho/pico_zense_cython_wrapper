@@ -1,7 +1,7 @@
-toml
-opencv-python
-cvui
+toml==0.10.1
+opencv-python==4.2.0
+cvui==2.7
 numpy
-cython
-click
-pkgconfig
+cython==0.29.19
+click==7.1.2
+pkgconfig==1.5.1

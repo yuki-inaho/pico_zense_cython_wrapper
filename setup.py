@@ -24,7 +24,7 @@ setup(
     ext_modules = cythonize(
                  [
                     Extension("zense_pywrapper",
-                        sources=["zense_pywrapper.pyx", "pico_zense_manager.cpp"],
+                        sources=["scripts/zense_pywrapper.pyx", "scripts/pico_zense_manager.cpp"],
                         extra_compile_args=["-std=gnu++11", "-O3", zense_cflags, zense_libs],
                         include_dirs=[numpy.get_include()],
                         library_dirs=lib_dirs,
@@ -33,7 +33,7 @@ setup(
                     ),
 
                     Extension("opencv_mat",
-                        sources=["opencv_mat.pyx"],
+                        sources=["scripts/opencv_mat.pyx"],
                         include_dirs=[numpy.get_include(),
                                         os.path.join(sys.prefix, 'include', 'opencv2'),
                                         ],
