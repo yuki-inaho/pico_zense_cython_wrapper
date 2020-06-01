@@ -4,8 +4,9 @@
 
 #define MAX_DEVICECOUNT 10
 
-class PicoZenseManager {
- public:
+class PicoZenseManager
+{
+public:
   PicoZenseManager();
   ~PicoZenseManager();
 
@@ -19,17 +20,29 @@ class PicoZenseManager {
 
   bool setupDevice(int32_t deviceIndex, int32_t range1 = PsNearRange,
                    int32_t range2 = PsFarRange, bool isRGB = false);
+  bool setupDeviceDebug(
+      int32_t deviceIndex, int32_t range1, int32_t range2, bool isRGB,
+      bool EnableDepthDistCorrection,
+      bool EnableIRDistCorrection,
+      bool EnableRGBDistCorrection,
+      bool EnableComputeRealDepthFilter,
+      bool EnableComputeSmoothingFilter,
+      bool EnabledRGBToDepth,
+      bool EnabledDepthToRGB);
+
   bool startDevice(int32_t deviceIndex);
 
   bool updateDevice(int32_t deviceIndex);
 
   int32_t getDeviceCount() { return deviceCount_; }
-  std::string getSerialNumber(int32_t deviceIndex) {
+  std::string getSerialNumber(int32_t deviceIndex)
+  {
     return serialNumber_[deviceIndex];
   }
   int32_t getDeviceIndex(std::string strSerial);
 
-  void setSmoothingFilter(int32_t deviceIndex, bool enable) {
+  void setSmoothingFilter(int32_t deviceIndex, bool enable)
+  {
     PsSetFilter(deviceIndex, PsSmoothingFilter, enable);
     std::cout << "Device " << deviceIndex
               << " SmoothingFilter : " << (enable ? "ON" : "OFF") << std::endl;
@@ -43,8 +56,9 @@ class PicoZenseManager {
     return imageTimestamps_[deviceIndex];
   }
   */
-  bool setDepthRange(int32_t deviceIndex, std::string given_depth_range); 
-  int32_t getDepthRange(int32_t deviceIndex) {
+  bool setDepthRange(int32_t deviceIndex, std::string given_depth_range);
+  int32_t getDepthRange(int32_t deviceIndex)
+  {
     return depthRange_[deviceIndex];
   }
 
@@ -53,11 +67,13 @@ class PicoZenseManager {
   cv::Mat getRgbImage(int32_t deviceIndex) { return rgbImg_[deviceIndex]; }
 
   // @param sensor_type 0: depth, 1: rgb
-  CameraParameter getCameraParameter(int32_t deviceIndex, int32_t sensor_type) {
+  CameraParameter getCameraParameter(int32_t deviceIndex, int32_t sensor_type)
+  {
     return cameraParams_[deviceIndex][sensor_type];
   }
 
-  ExtrinsicParameter getExtrinsicParameter(int32_t deviceIndex) {
+  ExtrinsicParameter getExtrinsicParameter(int32_t deviceIndex)
+  {
     PsCameraExtrinsicParameters pCameraExtrinsicParameters;
     ExtrinsicParameter extrinsic_param_;
     PsGetCameraExtrinsicParameters(deviceIndex, &pCameraExtrinsicParameters);
@@ -74,13 +90,14 @@ class PicoZenseManager {
   bool getPulseCount(int32_t deviceIndex, uint32_t &pulseCount);
   bool setPulseCount(int32_t deviceIndex, uint32_t pulseCount);
 
-  typedef enum {
+  typedef enum
+  {
     DeviceClosed = 0,
     DeviceOpened = 1,
     DeviceStarted = 2,
   } DeviceState;
 
- private:
+private:
   int32_t deviceCount_;
 
   DeviceState deviceState_[MAX_DEVICECOUNT];
@@ -94,7 +111,7 @@ class PicoZenseManager {
   cv::Mat irImg_[MAX_DEVICECOUNT];
   cv::Mat rgbImg_[MAX_DEVICECOUNT];
 
-  CameraParameter cameraParams_[MAX_DEVICECOUNT][2];  // 0: depth, 1: rgb
+  CameraParameter cameraParams_[MAX_DEVICECOUNT][2]; // 0: depth, 1: rgb
 
   CameraParameter updateCameraParameter_(
       int32_t deviceIndex, PsSensorType sensor_type = PsDepthSensor);

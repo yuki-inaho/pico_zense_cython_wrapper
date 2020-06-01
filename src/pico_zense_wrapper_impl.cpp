@@ -133,6 +133,60 @@ void PicoZenseWrapperImpl::setup(int32_t device_index__) {
   std::cout << "Camera setup is finished!" << std::endl;
 }
 
+void PicoZenseWrapperImpl::setup_debug(
+      int32_t device_index__,
+      bool EnableDepthDistCorrection,
+      bool EnableIRDistCorrection,
+      bool EnableRGBDistCorrection,
+      bool EnableComputeRealDepthFilter,
+      bool EnableSmoothingFilter,
+      bool EnabledRGBToDepth,
+      bool EnabledDepth2RGB
+    )
+{
+  device_index_ = device_index__;
+  usleep(5 * 1e6);  // To avoid high frequent sensor open call from
+                    // immediately after termination and rebooting
+  range1 = 0;
+  range2 = -1;
+  isRGB = 1;
+  isWDR = (range1 >= 0) && (range2 >= 0);
+  isIR = isRGB && !isWDR;
+
+  manager_.openDevice(device_index_);
+  if (!manager_.setupDevice(device_index_, range1, range2, isRGB)) {
+    close();
+    std::cerr << "Could not setup device" << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
+  if (range2 < 0) range2 = range1;
+
+  std::string camera_name = "Camera0";
+  int32_t lenSerial = 100;
+  char buffSerial[lenSerial];
+  PsReturnStatus status;
+  status = PsGetProperty(device_index_, PsPropertySN_Str, buffSerial, &lenSerial);
+  if (status != PsReturnStatus::PsRetOK) {
+    std::cout << "Aquisition of Device Serial Number failed !" << std::endl;
+  }
+  serial_no_ = std::string(buffSerial);
+  std::cout << "Serial number allocated to Zense Manager : " << serial_no_
+            << std::endl;
+
+  //TODO: rewrite RGB flag expricitly
+  camera_param_ = manager_.getCameraParameter(device_index_, 0);
+  camera_param_rgb_ = manager_.getCameraParameter(device_index_, 1);
+  extrinsic_param_ = manager_.getExtrinsicParameter(device_index_);
+
+  if (!manager_.startDevice(device_index_)) {
+    close();
+    std::cerr << "Could not start device" << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
+
+  std::cout << "Camera setup is finished!" << std::endl;
+}
+
 void PicoZenseWrapperImpl::close() { manager_.closeDevice(device_index_); }
 
 int PicoZenseWrapperImpl::getDepthRange() { return depth_range1; }

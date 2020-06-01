@@ -262,6 +262,139 @@ bool PicoZenseManager::setupDevice(int32_t deviceIndex, int32_t range1,
   return true;
 }
 
+
+bool PicoZenseManager::setupDeviceDebug(
+  int32_t deviceIndex, int32_t range1, int32_t range2, bool isRGB, 
+  bool EnableDepthDistCorrection,
+  bool EnableIRDistCorrection,
+  bool EnableRGBDistCorrection,
+  bool EnableComputeRealDepthFilter,
+  bool EnableComputeSmoothingFilter,
+  bool EnabledRGBToDepth,
+  bool EnabledDepthToRGB
+  ) {
+  cout << "Setting up device : " << deviceIndex << endl;
+  if (!(deviceIndex >= 0 && deviceIndex < deviceCount_)) {
+    cout << "Device index is out of range!" << endl;
+    return false;
+  }
+
+  if (deviceState_[deviceIndex] == DeviceClosed) return false;
+
+  PsReturnStatus status;
+
+  // Operating Mode
+  int32_t dataMode;
+  isWDR_[deviceIndex] = !(range2 < PsNearRange);
+  isRGB_[deviceIndex] = isRGB;
+  if (isWDR_[deviceIndex]) dataMode = PsWDR_Depth;
+  //    else if (isRGB_[deviceIndex]) dataMode = PsDepthAndRGB_30;
+  else if (isRGB_[deviceIndex])
+    dataMode = PsDepthAndIR_15_RGB_30;
+  else
+    dataMode = PsDepthAndIR_30;
+  status = PsSetDataMode(deviceIndex, (PsDataMode)dataMode);
+  if (status != PsReturnStatus::PsRetOK) {
+    cout << "PsSetDataMode failed!" << endl;
+    return false;
+  }
+
+  // Set depth range
+  string strRange[10];
+  strRange[PsNearRange] = "near";
+  strRange[PsMidRange] = "mid";
+  strRange[PsFarRange] = "far";
+
+  status = PsSetDepthRange(deviceIndex, (PsDepthRange)range1);
+  if (status != PsReturnStatus::PsRetOK) {
+    cout << "PsSetDepthRange failed!" << endl;
+    return false;
+  }
+  if (isWDR_[deviceIndex]) {
+    PsWDROutputMode modeWDR = {PsWDRTotalRange_Two,
+                               (PsDepthRange)range1,
+                               1,
+                               (PsDepthRange)range2,
+                               1,
+                               PsNearRange,
+                               1};
+    status = PsSetWDROutputMode(deviceIndex, &modeWDR);
+    if (status != PsReturnStatus::PsRetOK) {
+      cout << "PsSetWDROutputMode failed!" << endl;
+      return false;
+    }
+    status = PsSetWDRStyle(deviceIndex, PsWDR_ALTERNATION);
+    if (status != PsReturnStatus::PsRetOK) {
+      cout << "PsSetWDRStyle failed!" << endl;
+      return false;
+    }
+    cout << "WDR mode : " << strRange[range1] << "-" << strRange[range2]
+         << endl;
+  } else {
+    cout << "Single range mode : " << strRange[range1] << endl;
+  }
+
+  // Distortion
+  PsSetDepthDistortionCorrectionEnabled(deviceIndex, EnableDepthDistCorrection);
+  PsSetIrDistortionCorrectionEnabled(deviceIndex, EnableIRDistCorrection);
+  PsSetRGBDistortionCorrectionEnabled(deviceIndex, EnableRGBDistCorrection);
+
+  // TODO: tune these!!!
+  // Filters
+  PsSetFilter(deviceIndex, PsComputeRealDepthFilter, EnableComputeRealDepthFilter);  // default : true
+  PsSetFilter(deviceIndex, PsSmoothingFilter, EnableComputeSmoothingFilter);         // default : true
+  //    PsSetFilter(deviceIndex, PSSpatialFilter, false);
+
+  // RGB resolution
+  PsFrameMode frameMode;
+  frameMode.fps = 30;
+  frameMode.pixelFormat = PsPixelFormatBGR888;
+  frameMode.resolutionWidth = 1920;
+  frameMode.resolutionHeight = 1080;
+  PsSetFrameMode(deviceIndex, PsRGBFrame, &frameMode);
+
+  PsSetColorPixelFormat(deviceIndex, PsPixelFormatBGR888);
+
+  status = PsSetMapperEnabledRGBToDepth(deviceIndex, EnabledRGBToDepth);
+  if (status != PsRetOK) {
+    cout << "PsSetMapperEnabledRGBToDepth failed!" << endl;
+    return false;
+  }
+
+  status = PsSetMapperEnabledDepthToRGB(deviceIndex, EnabledDepthToRGB);
+  if (status != PsRetOK) {
+    cout << "PsSetMapperEnabledDepthToRGB failed!" << endl;
+    return false;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  /* TODO memos!!!!!
+
+  PsDepthVector3
+
+  PsSetWDRFusionThreshold
+
+  PsGetThreshold
+  PsSetThreshold
+
+  PsGetTimeFilterEnabled
+  PsSetTimeFilterEnabled
+
+  PsSetComputeRealDepthCorrectionEnabled
+  PsSetSmoothingFilterEnabled
+  PsSetSpatialFilterEnabled
+
+  */
+  //////////////////////////////////////////////////////////////////////////////
+
+  cameraParams_[deviceIndex][0] =
+      updateCameraParameter_(deviceIndex, PsDepthSensor);
+  cameraParams_[deviceIndex][1] =
+      updateCameraParameter_(deviceIndex, PsRgbSensor);
+
+  return true;
+}
+
 bool PicoZenseManager::startDevice(int32_t deviceIndex) {
   if (deviceState_[deviceIndex] == DeviceClosed) return false;
   if (deviceState_[deviceIndex] == DeviceStarted) return false;
