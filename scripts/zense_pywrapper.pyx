@@ -117,6 +117,7 @@ cdef extern from "../include/pico_zense_wrapper_impl.hpp" namespace "zense":
 
 cdef class PyPicoZenseManager:
     cdef PicoZenseWrapperImpl * thisptr
+    cdef int32_t device_index_
     cdef object rgbImg_npy
     cdef object irImg_npy
     cdef vector[Mat] depthWDRImg

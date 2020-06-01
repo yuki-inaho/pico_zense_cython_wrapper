@@ -1,21 +1,82 @@
+import multiprocessing as mp
 import os.path as osp
 import sys
-import toml
-import click
-from zense_pywrapper import PyPicoZenseManager
-
 import time
-import multiprocessing as mp
+
+import click
+import toml
+from zense_pywrapper import PyPicoZenseManager
+import pdb
 import psutil
+from enum import Enum, IntEnum
+
+class CameraFlags(IntEnum):
+    EnableDepthDistCorrection = 1,
+    EnableIRDistCorrection = 2,
+    EnableRGBDistCorrection = 3,
+    EnableComputeRealDepthFilter = 4,
+    EnableSmoothingFilter = 5,
+    EnabledRGBToDepth = 6,
+    EnabledDepth2RGB = 7
+
+class Setting:
+    def __init__(self):
+        EnableDepthDistCorrection = False
+        EnableIRDistCorrection = False
+        EnableRGBDistCorrection = False
+        EnableComputeRealDepthFilter = False
+        EnableSmoothingFilter = False
+        EnabledRGBToDepth = False
+        EnabledDepth2RGB = False
+        self.flags = [
+            EnableDepthDistCorrection,
+            EnableIRDistCorrection,
+            EnableRGBDistCorrection,
+            EnableComputeRealDepthFilter,
+            EnableSmoothingFilter,
+            EnabledRGBToDepth,
+            EnabledDepth2RGB
+        ]
+
+    def flip(self, idx):
+        pdb.set_trace()        
+        self.flags[idx] = not self.flags[idx]
+
+    @property
+    def flags(self):
+        return self.flags
+
+def set_setting(zense_mng, zense_setting):
+    EnableDepthDistCorrection, \
+        EnableIRDistCorrection, \
+        EnableRGBDistCorrection, \
+        EnableComputeRealDepthFilter, \
+        EnableSmoothingFilter, \
+        EnabledRGBToDepth, \
+        EnabledDepth2RGB = zense_setting.flags
+
+    zense_mng.setup_debug(
+        EnableDepthDistCorrection,
+        EnableIRDistCorrection,
+        EnableRGBDistCorrection,
+        EnableComputeRealDepthFilter,
+        EnableSmoothingFilter,
+        EnabledRGBToDepth,
+        EnabledDepth2RGB
+    )
+
 
 def configure_flipping():
-    model = load_model('1.h5')
-    x_test = np.random.rand(10000, 1000)
+    zense_mng = PyPicoZenseManager(0, debug=True)
+    zense_setting = Setting()
+    zense_setting.flip(CameraFlags.EnableComputeRealDepthFilter)
+    set_setting(zense_mng, zense_setting)
     time.sleep(1)
+    for _ in range(5):
+        zense_setting.flip(CameraFlags.EnableComputeRealDepthFilter)
+        set_setting(zense_mng, zense_setting)
+        time.sleep(1)
 
-    for _ in range(3):
-        model.predict(x_test)
-        time.sleep(0.5)
 
 def monitor(target):
     worker_process = mp.Process(target=target)
@@ -31,4 +92,7 @@ def monitor(target):
     worker_process.join()
     return cpu_percents
 
-cpu_percents = monitor(target=run_predict)
+    zense_setting = Setting()
+    zense_setting.flip(CameraFlags.EnableComputeRealDepthFilter)
+
+cpu_percents = monitor(target=configure_flipping)
