@@ -141,7 +141,7 @@ cdef class PyPicoZenseManager:
             if self.thisptr.is_ir():
                 # RGBDIR case
                 rgbImg = self.thisptr.getRGBImage()
-                if(rgbImg.cols > 0): return False
+                if(rgbImg.cols == 0): return False
                 self.rgbImg_npy = Mat2np(rgbImg)
                 irImg = self.thisptr.getIRImage()
                 self.irImg_npy = Mat2np(irImg, is_UC16=True)
@@ -151,7 +151,7 @@ cdef class PyPicoZenseManager:
             else:
                 # RGBD case
                 rgbImg = self.thisptr.getRGBImage()
-                if(rgbImg.cols > 0): return False
+                if(rgbImg.cols == 0): return False
                 self.rgbImg_npy = Mat2np(rgbImg)
                 depthImg = self.thisptr.getDepthImage()
                 self.depthImgRange1_npy = Mat2np(depthImg, is_UC16=True)
@@ -160,7 +160,7 @@ cdef class PyPicoZenseManager:
             if self.thisptr.is_wdr():
                 # WDR case
                 depthWDRImg = self.thisptr.getWDRDepthImage()
-                if(depthWDRImg[0].cols > 0): return False
+                if(depthWDRImg[0].cols == 0): return False
                 self.depthImgRange1_npy = Mat2np(
                     depthWDRImg[0], is_UC16=True)
                 self.depthImgRange2_npy = Mat2np(
@@ -168,7 +168,7 @@ cdef class PyPicoZenseManager:
             else:
                 # DepthIR case
                 irImg = self.thisptr.getIRImage()
-                if(irImg.cols > 0): return False
+                if(irImg.cols == 0): return False
                 self.irImg_npy = Mat2np(irImg)
                 depthImg = self.thisptr.getDepthImage()
                 self.depthImgRange1_npy = Mat2np(depthImg, is_UC16=True)

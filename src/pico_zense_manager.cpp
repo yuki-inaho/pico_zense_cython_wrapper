@@ -34,7 +34,9 @@ PicoZenseManager::PicoZenseManager() {
 PicoZenseManager::~PicoZenseManager() {
   PsReturnStatus status;
   status = PsShutdown();
-  cout << "Shutdown : " << status << endl;
+  if (status != PsReturnStatus::PsRetOK) {
+    cout << "PsShutdown failed!" << endl;
+  }
 }
 
 /*
@@ -111,15 +113,8 @@ bool PicoZenseManager::openDevice(int32_t deviceIndex) {
   return true;
 }
 
-void PicoZenseManager::closeAllDevices() {
-  for (int deviceIndex = 0; deviceIndex < deviceCount_; deviceIndex++) {
-    closeDevice(deviceIndex);
-  }
-}
-
 void PicoZenseManager::closeDevice(int32_t deviceIndex) {
   if (deviceState_[deviceIndex] == DeviceClosed) return;
-
   PsReturnStatus status;
 
   /* Though it is recommended in SDK document, PsStopFrame call causes error and
