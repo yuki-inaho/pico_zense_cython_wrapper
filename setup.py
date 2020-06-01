@@ -10,7 +10,7 @@ import pkgconfig
 zense_cflags = pkgconfig.cflags('libpicozense')
 zense_libs = pkgconfig.libs('libpicozense')
 
-cvlib_folder = os.path.join(sys.prefix, 'local', 'lib')
+cvlib_folder = os.path.join('/usr', 'local', 'lib')
 lib_dirs = [cvlib_folder]
 
 cvlibs = list()
