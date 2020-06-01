@@ -15,4 +15,4 @@ opencv_mat.so
 #Apps
 cfg/camera_parameter.toml
 data/
-
+output_image/
