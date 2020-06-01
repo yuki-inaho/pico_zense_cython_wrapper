@@ -20,7 +20,6 @@ IMAGE_HEIGHT = 480
 
 
 def main():
-    global TOML_PATH_ZENSE
     global DATA_SAVE_DIR
     global WINDOW_NAME
     global IMAGE_WIDTH
