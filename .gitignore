@@ -12,5 +12,7 @@ opencv_mat.cpython-*
 zense_pywrapper.so
 opencv_mat.so
 
+#Apps
 camera_parameter.toml
+./data
 
