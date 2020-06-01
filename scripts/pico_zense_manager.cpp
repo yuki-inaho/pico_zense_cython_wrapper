@@ -95,7 +95,12 @@ PicoZenseManager::PicoZenseManager(int32_t device_idx) {
       std::begin(pCameraExtrinsicParameters.translation),
       std::end(pCameraExtrinsicParameters.translation));
   extrinsic_param_.rotation = _rotation;
-  extrinsic_param_.translation = _translation;
+  std::vector<double> _translation_scaled;
+  // The scale unit of translation parameter value from zense API is [mm], so convert [m]
+  std::transform(_translation.begin(), _translation.end(),
+                 std::back_inserter(_translation_scaled),
+                 [](double t) { return t / 1000; });
+  extrinsic_param_.translation = _translation_scaled;
 
   PsSetRGBDistortionCorrectionEnabled(device_idx_, true);
   PsSetDepthDistortionCorrectionEnabled(device_idx_, true);

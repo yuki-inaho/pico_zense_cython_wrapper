@@ -11,7 +11,8 @@ import json
 
 import pdb
 
-DATA_SAVE_DIR = os.path.join(os.getcwd(), "./data")
+SCRIPT_PATH = osp.dirname(osp.abspath(__file__))
+DATA_SAVE_DIR = os.path.join(os.getcwd(), "{}/../data".format(SCRIPT_PATH))
 
 WINDOW_NAME = "Capture"
 IMAGE_WIDTH = 640

@@ -1,23 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os.path as osp
 import toml
 import click
 from zense_pywrapper import PyPicoZenseManager
 from collections import OrderedDict
 
+SCRIPT_PATH = osp.dirname(osp.abspath(__file__))
+
 
 @click.command()
-@click.option('--out', '-o', default='./camera_parameter.toml')
+@click.option('--out', '-o', default='{}/../cfg/camera_parameter.toml'.format(SCRIPT_PATH))
 def main(out):
     zense = PyPicoZenseManager(0)
 
     decoder = toml.TomlDecoder(_dict=OrderedDict)
     encoder = toml.TomlEncoder(_dict=OrderedDict)
     toml.TomlEncoder = encoder
-    dict_toml = toml.load(open('template.toml'),
+    dict_toml = toml.load(open('{}/../cfg/template.toml'.format(SCRIPT_PATH)),
                           _dict=OrderedDict, decoder=decoder)
 
-    dict_toml["Camera0"]["serial_no"] = zense.getSerialNumber()
+    dict_toml["Camera0"]["serial_no"] = zense.getSerialNumber().decode('utf-8')
     intrinsic_depth_params = zense.getCameraParameter()
     intrinsic_rgb_params = zense.getRGBCameraParameter()
 

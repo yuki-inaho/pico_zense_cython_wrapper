@@ -1,5 +1,5 @@
 # distutils: language = c++
-# distutils: sources = pico_zense_manager.cpp
+# distutils: sources = scripts/pico_zense_manager.cpp
 
 from opencv_mat cimport *
 import opencv_mat
