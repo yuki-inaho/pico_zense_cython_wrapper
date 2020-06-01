@@ -45,8 +45,8 @@ def main():
     while ((key & 0xFF != ord('q')) or (key & 0xFF != 27)):
         status = zense_mng.update()
         if status:
-            rgb_img = zense_mng.getRGBImage()
-            depth_img = zense_mng.getDepthImage()
+            rgb_img = zense_mng.rgb_image
+            depth_img = zense_mng.depth_image
 
             rgb_img_resized = cv2.resize(rgb_img, (IMAGE_WIDTH, IMAGE_HEIGHT))
 

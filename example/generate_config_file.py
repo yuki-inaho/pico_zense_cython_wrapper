@@ -21,9 +21,8 @@ def main(out):
                           _dict=OrderedDict, decoder=decoder)
 
     dict_toml["Camera0"]["serial_no"] = zense.serial_number
-    pdb.set_trace()
-    intrinsic_depth_params = zense.getCameraParameter()
-    intrinsic_rgb_params = zense.getRGBCameraParameter()
+    intrinsic_depth_params = zense.camera_parameter_depth
+    intrinsic_rgb_params = zense.camera_parameter_rgb
 
     intrinsic_elems = ["fx", "fy", "cx", "cy",
                        "p1", "p2", "k1", "k2",
@@ -35,7 +34,7 @@ def main(out):
     for i, _elem in enumerate(intrinsic_elems):
         dict_toml["Camera0_RGB_Factory"][_elem] = intrinsic_rgb_params[i]
 
-    ext_params = zense.getExtrinsicParameter()
+    ext_params = zense.extrinsic_parameter
     _rotation_ext = ext_params[0]
     _translation_ext = ext_params[1]
     rotation_extrinsic_elems = ["r11", "r12", "r13",

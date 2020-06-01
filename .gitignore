@@ -1,7 +1,7 @@
 #Poetry
 .venv/
 .python-version
-.poetry.lock
+poetry.lock
 
 #Cython
 build/
@@ -13,6 +13,6 @@ zense_pywrapper.so
 opencv_mat.so
 
 #Apps
-camera_parameter.toml
-./data
+cfg/camera_parameter.toml
+data/
 
