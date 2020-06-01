@@ -13,6 +13,7 @@ click = "^7.1.2"
 pkgconfig = "^1.5.1"
 numpy = "^1.16.6"
 cvui = "2.7b1"
+psutil = "^5.7.0"
 
 [tool.poetry.dev-dependencies]
 

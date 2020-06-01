@@ -154,7 +154,16 @@ void PicoZenseWrapperImpl::setup_debug(
   isIR = isRGB && !isWDR;
 
   manager_.openDevice(device_index_);
-  if (!manager_.setupDevice(device_index_, range1, range2, isRGB)) {
+  if (!manager_.setupDeviceDebug(
+      device_index_, range1, range2, isRGB,
+      EnableDepthDistCorrection,
+      EnableIRDistCorrection,
+      EnableRGBDistCorrection,
+      EnableComputeRealDepthFilter,
+      EnableSmoothingFilter,
+      EnabledRGBToDepth,
+      EnabledDepth2RGB
+    )) {
     close();
     std::cerr << "Could not setup device" << std::endl;
     std::exit(EXIT_FAILURE);

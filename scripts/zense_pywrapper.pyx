@@ -62,9 +62,9 @@ cdef object Mat2np(Mat m, bool is_UC16=False):
     cdef size_t len = m.rows*m.cols*m.elemSize()
 
     # Fill buffer
-    PyBuffer_FillInfo(& buf_info, NULL, m.data, len, False, PyBUF_FULL_RO)
+    PyBuffer_FillInfo( & buf_info, NULL, m.data, len, False, PyBUF_FULL_RO)
     # Get Pyobject from buffer data
-    Pydata  = PyMemoryView_FromBuffer(& buf_info)
+    Pydata  = PyMemoryView_FromBuffer( & buf_info)
 
     # Create ndarray with data
     # the dimension of the output array is 2 if the image is grayscale
@@ -123,8 +123,14 @@ cdef class PyPicoZenseManager:
     cdef object depthImgRange1_npy
     cdef object depthImgRange2_npy
 
-    def __cinit__(self, int32_t device_index_, string cfgParamPath='', string camKey=''):
+    def __cinit__(self, int32_t device_index_,
+                  string cfgParamPath='', string camKey='',
+                  bool debug=False
+                  ):
         self.thisptr = new PicoZenseWrapperImpl()
+        if debug:
+            self.device_index_ = device_index_
+            return
         if (len(cfgParamPath) > 0) and (len(camKey) > 0):
             self.thisptr.setup(cfgParamPath, camKey, device_index_)
         else:
@@ -132,6 +138,23 @@ cdef class PyPicoZenseManager:
 
     def __dealloc__(self):
         del self.thisptr
+
+    def setup_debug(self,
+                    bool EnableDepthDistCorrection,
+                    bool EnableIRDistCorrection,
+                    bool EnableRGBDistCorrection,
+                    bool EnableComputeRealDepthFilter,
+                    bool EnableSmoothingFilter,
+                    bool EnabledRGBToDepth,
+                    bool EnabledDepth2RGB):
+        self.thisptr.setup_debug(self.device_index_,
+                                 EnableDepthDistCorrection,
+                                 EnableIRDistCorrection,
+                                 EnableRGBDistCorrection,
+                                 EnableComputeRealDepthFilter,
+                                 EnableSmoothingFilter,
+                                 EnabledRGBToDepth,
+                                 EnabledDepth2RGB)
 
     def update(self):
         cdef Mat rgbImg
