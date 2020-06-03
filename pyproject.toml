@@ -15,6 +15,7 @@ numpy = "^1.16.6"
 cvui = "2.7b1"
 psutil = "^5.7.0"
 enum="0.4.7"
+ipython="5.10.0"
 
 [tool.poetry.dev-dependencies]
 

@@ -10,6 +10,13 @@ import pdb
 import psutil
 from enum import Enum, IntEnum
 
+
+# Unique objects
+zense_mng = PyPicoZenseManager(0, debug=True)
+this_pid = filter(lambda p: psutil.Process(
+    p).name() == "python", psutil.pids())[0]
+
+
 class CameraFlags(IntEnum):
     EnableDepthDistCorrection = 1,
     EnableIRDistCorrection = 2,
@@ -18,6 +25,7 @@ class CameraFlags(IntEnum):
     EnableSmoothingFilter = 5,
     EnabledRGBToDepth = 6,
     EnabledDepth2RGB = 7
+
 
 class Setting:
     def __init__(self):
@@ -39,12 +47,12 @@ class Setting:
         ]
 
     def flip(self, idx):
-        pdb.set_trace()        
         self.flags[idx] = not self.flags[idx]
 
     @property
     def flags(self):
         return self.flags
+
 
 def set_setting(zense_mng, zense_setting):
     EnableDepthDistCorrection, \
@@ -66,33 +74,32 @@ def set_setting(zense_mng, zense_setting):
     )
 
 
-def configure_flipping():
-    zense_mng = PyPicoZenseManager(0, debug=True)
+def configure_flipping(switch_flag):
     zense_setting = Setting()
-    zense_setting.flip(CameraFlags.EnableComputeRealDepthFilter)
+    zense_setting.flip(switch_flag)
     set_setting(zense_mng, zense_setting)
-    time.sleep(1)
-    for _ in range(5):
-        zense_setting.flip(CameraFlags.EnableComputeRealDepthFilter)
-        set_setting(zense_mng, zense_setting)
-        time.sleep(1)
 
 
-def monitor(target):
-    worker_process = mp.Process(target=target)
-    worker_process.start()
-    p = psutil.Process(worker_process.pid)
+def monitor(switch_flags):
+    zense_setting = Setting(switch_flags)
+    set_setting(zense_mng, zense_setting)
+    process = psutil.Process(this_pid)
 
     # log cpu usage of `worker_process` every 10 ms
     cpu_percents = []
-    while worker_process.is_alive():
-        cpu_percents.append(p.cpu_percent())
-        time.sleep(0.01)
+    count = 1
+    while count < 1000:
+        zense_mng.update()
+        if (count % 100) == 0:
+            configure_flipping()
+        cpu_percents.append(process.cpu_percent())
+        print("{}%".format(cpu_percents[-1]))
+        time.sleep(0.05)
+        count += 1
 
-    worker_process.join()
     return cpu_percents
 
-    zense_setting = Setting()
-    zense_setting.flip(CameraFlags.EnableComputeRealDepthFilter)
 
-cpu_percents = monitor(target=configure_flipping)
+zense_setting = Setting()
+zense_setting.flip(CameraFlags.EnableComputeRealDepthFilter)
+cpu_percents = monitor()
