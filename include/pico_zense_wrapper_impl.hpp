@@ -47,6 +47,8 @@ namespace zense
         bool EnableRGBDistCorrection,
         bool EnableComputeRealDepthFilter,
         bool EnableSmoothingFilter,
+        bool EnableTimeFilter,
+        bool EnableSpatialFilter,
         bool EnabledRGBToDepth,
         bool EnabledDepth2RGB);
 

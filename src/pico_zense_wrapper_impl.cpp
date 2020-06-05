@@ -140,6 +140,8 @@ void PicoZenseWrapperImpl::setup_debug(
       bool EnableRGBDistCorrection,
       bool EnableComputeRealDepthFilter,
       bool EnableSmoothingFilter,
+      bool EnableTimeFilter,
+      bool EnableSpatialFilter,
       bool EnabledRGBToDepth,
       bool EnabledDepth2RGB
     )
@@ -161,6 +163,8 @@ void PicoZenseWrapperImpl::setup_debug(
       EnableRGBDistCorrection,
       EnableComputeRealDepthFilter,
       EnableSmoothingFilter,
+      EnableTimeFilter,
+      EnableSpatialFilter,
       EnabledRGBToDepth,
       EnabledDepth2RGB
     )) {

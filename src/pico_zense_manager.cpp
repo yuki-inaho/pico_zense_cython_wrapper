@@ -270,6 +270,8 @@ bool PicoZenseManager::setupDeviceDebug(
   bool EnableRGBDistCorrection,
   bool EnableComputeRealDepthFilter,
   bool EnableComputeSmoothingFilter,
+  bool EnableTimeFilter,
+  bool EnableSpatialFilter,
   bool EnabledRGBToDepth,
   bool EnabledDepthToRGB
   ) {
@@ -343,6 +345,8 @@ bool PicoZenseManager::setupDeviceDebug(
   // Filters
   PsSetFilter(deviceIndex, PsComputeRealDepthFilter, EnableComputeRealDepthFilter);  // default : true
   PsSetFilter(deviceIndex, PsSmoothingFilter, EnableComputeSmoothingFilter);         // default : true
+  PsSetTimeFilterEnabled(deviceIndex, EnableTimeFilter);
+  PsSetSpatialFilterEnabled(deviceIndex, EnableSpatialFilter);
   //    PsSetFilter(deviceIndex, PSSpatialFilter, false);
 
   // RGB resolution

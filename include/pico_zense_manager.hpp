@@ -27,6 +27,8 @@ public:
       bool EnableRGBDistCorrection,
       bool EnableComputeRealDepthFilter,
       bool EnableComputeSmoothingFilter,
+      bool EnableTimeFilter,
+      bool EnableSpatialFilter,
       bool EnabledRGBToDepth,
       bool EnabledDepthToRGB);
 

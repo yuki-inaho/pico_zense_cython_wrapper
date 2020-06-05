@@ -30,8 +30,10 @@ class CameraFlags(IntEnum):
     EnableRGBDistCorrection = 2,
     EnableComputeRealDepthFilter = 3,
     EnableSmoothingFilter = 4,
-    EnabledRGBToDepth = 5,
-    EnabledDepth2RGB = 6
+    EnableTimeFilter = 5,
+    EnableSpatialFilter = 6,
+    EnabledRGBToDepth = 7,
+    EnabledDepth2RGB = 8
 
 
 class Setting:
@@ -41,6 +43,8 @@ class Setting:
         EnableRGBDistCorrection = False
         EnableComputeRealDepthFilter = False
         EnableSmoothingFilter = False
+        EnableTimeFilter = False,
+        EnableSpatialFilter = False,
         EnabledRGBToDepth = False
         EnabledDepth2RGB = False
         self.flags = [
@@ -49,6 +53,8 @@ class Setting:
             EnableRGBDistCorrection,
             EnableComputeRealDepthFilter,
             EnableSmoothingFilter,
+            EnableTimeFilter,
+            EnableSpatialFilter,
             EnabledRGBToDepth,
             EnabledDepth2RGB
         ]
@@ -67,6 +73,8 @@ def set_setting(zense_mng, zense_setting):
         EnableRGBDistCorrection, \
         EnableComputeRealDepthFilter, \
         EnableSmoothingFilter, \
+        EnableTimeFilter, \
+        EnableSpatialFilter, \
         EnabledRGBToDepth, \
         EnabledDepth2RGB = zense_setting.flags
 
@@ -76,6 +84,8 @@ def set_setting(zense_mng, zense_setting):
         EnableRGBDistCorrection,
         EnableComputeRealDepthFilter,
         EnableSmoothingFilter,
+        EnableTimeFilter,
+        EnableSpatialFilter,
         EnabledRGBToDepth,
         EnabledDepth2RGB
     )
@@ -94,7 +104,7 @@ def monitor(switch_flags):
     cpu_percents = []
     count = 1
     start_time = get_timestamp_milliseconds()
-    while count < 500:
+    while count < 1000:
         if (count % 100) == 0:
             configure_flipping(switch_flags)
         cpu_percents.append(
@@ -106,16 +116,22 @@ def monitor(switch_flags):
 
 
 cpu_percents_depth_dist = monitor(CameraFlags.EnableDepthDistCorrection)
-np.savetxt("data/cpu_percents_depth_dist.txt" , cpu_percents_depth_dist)
+np.savetxt("data/cpu_percents_depth_dist.txt", cpu_percents_depth_dist)
 cpu_percents_ir_dist = monitor(CameraFlags.EnableIRDistCorrection)
-np.savetxt("data/cpu_percents_ir_dist.txt" , cpu_percents_ir_dist)
+np.savetxt("data/cpu_percents_ir_dist.txt", cpu_percents_ir_dist)
 cpu_percents_rgb_dist = monitor(CameraFlags.EnableRGBDistCorrection)
-np.savetxt("data/cpu_percents_rgb_dist.txt" , cpu_percents_rgb_dist)
+np.savetxt("data/cpu_percents_rgb_dist.txt", cpu_percents_rgb_dist)
 cpu_percents_real_depth = monitor(CameraFlags.EnableComputeRealDepthFilter)
-np.savetxt("data/cpu_percents_real_depth.txt" , cpu_percents_real_depth)
+np.savetxt("data/cpu_percents_real_depth.txt", cpu_percents_real_depth)
 cpu_percents_smooth_filter = monitor(CameraFlags.EnableSmoothingFilter)
-np.savetxt("data/cpu_percents_smooth_filter.txt" , cpu_percents_smooth_filter)
+np.savetxt("data/cpu_percents_smooth_filter.txt", cpu_percents_smooth_filter)
+cpu_percents_time_filter = monitor(CameraFlags.EnableTimeFilter)
+np.savetxt("data/cpu_percents_time_filter.txt", cpu_percents_time_filter)
+cpu_percents_spatial_filter = monitor(CameraFlags.EnableSpatialFilter)
+np.savetxt("data/cpu_percents_spatial_filter.txt", cpu_percents_spatial_filter)
 cpu_percents_enable_rgb_to_depth = monitor(CameraFlags.EnabledRGBToDepth)
-np.savetxt("data/cpu_percents_enable_rgb_to_depth.txt" , cpu_percents_enable_rgb_to_depth)
+np.savetxt("data/cpu_percents_enable_rgb_to_depth.txt",
+           cpu_percents_enable_rgb_to_depth)
 cpu_percents_enable_depth_to_rgb = monitor(CameraFlags.EnabledDepth2RGB)
-np.savetxt("data/cpu_percents_enable_depth_to_rgb.txt" , cpu_percents_enable_depth_to_rgb)
+np.savetxt("data/cpu_percents_enable_depth_to_rgb.txt",
+           cpu_percents_enable_depth_to_rgb)

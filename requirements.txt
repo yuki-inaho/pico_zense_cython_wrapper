@@ -8,3 +8,5 @@ toml==0.10.1
 pathlib==1.0.1
 pyflann==1.6.14
 matplotlib==2.2.5
+psutil==5.7.0
+enum34==1.1.10
