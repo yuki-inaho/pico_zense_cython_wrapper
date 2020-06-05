@@ -124,6 +124,8 @@ namespace zense
     bool undistortion_flag;
     PicoZenseUndistorter undistorter;
 
+    bool is_started = false;
+
     // For template speciallization, defined actual process is written in .cpp
     bool monitoring_skip();
     template <ZenseMode T>
