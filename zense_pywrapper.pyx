@@ -3,7 +3,7 @@
 
 from opencv_mat cimport *
 import opencv_mat
-from libc.stdint cimport int32_t
+from libc.stdint cimport int32_t, uint32_t
 from libcpp.vector cimport vector
 from libcpp.string cimport string
 from libcpp cimport bool
@@ -43,7 +43,7 @@ cdef extern from "Python.h":
 
 cdef extern from "pico_zense_manager.hpp" namespace "zense":
     cdef cppclass PicoZenseManager:
-        PicoZenseManager(int device_idx) except +
+        PicoZenseManager(uint32_t device_idx) except +
         string getSerialNumber()
         vector[double] getCameraParameter()
         vector[double] getRGBCameraParameter()

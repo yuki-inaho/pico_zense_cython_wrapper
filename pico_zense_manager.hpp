@@ -5,7 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <vector>
-#include "PicoZense_api.h"
+#include "Vzense_api2.h"
 
 #define MAX_DEVICECOUNT 10
 
