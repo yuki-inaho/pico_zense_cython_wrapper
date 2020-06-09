@@ -24,8 +24,8 @@ cvlib_include_folder = os.path.join(
 lib_dirs = [cvlib_folder]
 
 cvlibs = list()
-for file in glob.glob(os.path.join(cvlib_folder, 'libopencv_*')):
-    cvlibs.append(file.split('.')[0])
+for file in glob.glob(os.path.join(cvlib_folder, 'libopencv_*.so')):
+    cvlibs.append(os.path.basename(file).split('.')[0])
 cvlibs = list(set(cvlibs))
 cvlibs = ['opencv_{}'.format(
     lib.split(os.path.sep)[-1].split('libopencv_')[-1]) for lib in cvlibs]
@@ -41,7 +41,7 @@ setup(
                                           "-O3", zense_cflags, zense_libs],
                       include_dirs=[numpy.get_include(), cvlib_include_folder],
                       library_dirs=lib_dirs,
-                      libraries=cvlibs + ["picozense_api"],
+                      libraries=cvlibs + ["vzense_api", "ImgPreProcess"],
                       language="c++",
                       ),
 

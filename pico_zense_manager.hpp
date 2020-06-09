@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <vector>
+#include <thread>
 #include "Vzense_api2.h"
 
 #define MAX_DEVICECOUNT 10
@@ -34,7 +35,7 @@ struct ExtrinsicParameter {
 namespace zense {
 class PicoZenseManager {
  public:
-  PicoZenseManager(int32_t sensor_idx_);
+  PicoZenseManager(uint32_t sensor_idx_);
   ~PicoZenseManager();
   void printCameraParams(CameraParameter cameraParam);
   bool update();
@@ -48,8 +49,12 @@ class PicoZenseManager {
   std::vector<double> getRGBCameraParameter();
 
  private:
+  PsDeviceInfo* pDeviceListInfo;
+  PsDeviceHandle deviceHandle;
+  uint32_t sessionIndex;
+  uint32_t deviceCount_;
+
   std::string serialNumber_;
-  int32_t device_idx_;
   CameraParameter camera_param_;
   CameraParameter camera_param_rgb_;
   ExtrinsicParameter extrinsic_param_;

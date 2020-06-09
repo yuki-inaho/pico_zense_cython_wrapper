@@ -1,4 +1,7 @@
+.vscode
+
 build/
+poetry.lock
 opencv_mat.cpp
 zense_pywrapper.cpp
 zense_pywrapper.cpython-*

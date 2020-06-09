@@ -63,9 +63,6 @@ cdef class PyPicoZenseManager:
     def __cinit__(self, device_idx):
         self.thisptr = new PicoZenseManager(device_idx)
 
-    def __dealloc__(self):
-        del self.thisptr
-
     def update(self):
         cdef bool status
         cdef Mat rgbImg
