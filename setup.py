@@ -11,8 +11,9 @@ zense_cflags = pkgconfig.cflags('libpicozense')
 zense_libs = pkgconfig.libs('libpicozense')
 
 
-opencv_cflags = pkgconfig.cflags('opencv')
+opencv_cflags = pkgconfig.cflags('opencv').split()
 cvlibs_string = pkgconfig.libs('opencv')
+cvinclude = [str('{}'.format(elem.split('-I')[-1])) for elem in opencv_cflags]
 
 
 lib_dirs = []
@@ -38,7 +39,7 @@ setup(
                                "pico_zense_manager.cpp"],
                       extra_compile_args=["-std=gnu++11",
                                           "-O3", zense_cflags, zense_libs],
-                      include_dirs=[numpy.get_include()],
+                      include_dirs=[numpy.get_include()] + cvinclude,
                       library_dirs=lib_dirs,
                       libraries=cvlibs + ["picozense_api"],
                       language="c++",
@@ -46,10 +47,9 @@ setup(
 
             Extension("opencv_mat",
                       sources=["opencv_mat.pyx"],
-                      include_dirs=[numpy.get_include(),
-                                    os.path.join(
-                          sys.prefix, 'include', 'opencv2'),
-                      ],
+                      include_dirs=[
+                          numpy.get_include(),
+                      ] + cvinclude,
                       library_dirs=lib_dirs,
                       libraries=cvlibs,
                       language="c++"
