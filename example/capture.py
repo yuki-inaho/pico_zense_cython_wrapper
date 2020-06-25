@@ -1,5 +1,6 @@
 import glob
 import os
+import sys
 import os.path as osp
 import shutil
 
@@ -64,7 +65,9 @@ def main():
     number_of_saved_frame = len(
         glob.glob(osp.join(DATA_SAVE_DIR, "depth", "*.png")))
 
-    zense_mng = PyPicoZenseManager(0)
+    SCRIPT_DIR_PATH = os.path.dirname(os.path.abspath(__file__))
+    CFG_PARAM_PATH = os.path.join(SCRIPT_DIR_PATH, "../cfg/camera_parameter.toml")
+    zense_mng = PyPicoZenseManager(0, CFG_PARAM_PATH, "Camera0")
 
     cvui.init(WINDOW_NAME)
     key = cv2.waitKey(20)
@@ -72,8 +75,8 @@ def main():
     while ((key & 0xFF != ord('q')) or (key & 0xFF != 27)):
         status = zense_mng.update()
         if status:
-            ir_img = zense_mng.getIRImage()
-            depth_img = zense_mng.getDepthImage()
+            ir_img = zense_mng.ir_image
+            depth_img = zense_mng.depth_image
 
             ir_img_resized = cv2.resize(ir_img, (IMAGE_WIDTH, IMAGE_HEIGHT))
 

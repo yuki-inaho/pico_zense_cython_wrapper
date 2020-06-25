@@ -1,25 +1,28 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os.path as osp
+import sys
 import toml
 import click
 from zense_pywrapper import PyPicoZenseManager
 from collections import OrderedDict
-
+import pdb
+SCRIPT_PATH = osp.dirname(osp.abspath(sys.argv[0]))
 
 @click.command()
-@click.option('--out', '-o', default='./camera_parameter.toml')
+@click.option('--out', '-o', default='{}/../cfg/camera_parameter.toml'.format(SCRIPT_PATH))
 def main(out):
     zense = PyPicoZenseManager(0)
 
     decoder = toml.TomlDecoder(_dict=OrderedDict)
     encoder = toml.TomlEncoder(_dict=OrderedDict)
     toml.TomlEncoder = encoder
-    dict_toml = toml.load(open('template.toml'),
+    dict_toml = toml.load(open('{}/../cfg/template.toml'.format(SCRIPT_PATH)),
                           _dict=OrderedDict, decoder=decoder)
 
-    dict_toml["Camera0"]["serial_no"] = zense.getSerialNumber()
-    intrinsic_depth_params = zense.getCameraParameter()
-    intrinsic_rgb_params = zense.getRGBCameraParameter()
+    dict_toml["Camera0"]["serial_no"] = zense.serial_number
+    intrinsic_depth_params = zense.camera_parameter_depth
+    intrinsic_rgb_params = zense.camera_parameter_rgb
 
     intrinsic_elems = ["fx", "fy", "cx", "cy",
                        "p1", "p2", "k1", "k2",
@@ -31,7 +34,7 @@ def main(out):
     for i, _elem in enumerate(intrinsic_elems):
         dict_toml["Camera0_RGB_Factory"][_elem] = intrinsic_rgb_params[i]
 
-    ext_params = zense.getExtrinsicParameter()
+    ext_params = zense.extrinsic_parameter
     _rotation_ext = ext_params[0]
     _translation_ext = ext_params[1]
     rotation_extrinsic_elems = ["r11", "r12", "r13",
