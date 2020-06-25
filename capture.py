@@ -18,6 +18,33 @@ IMAGE_WIDTH = 640
 IMAGE_HEIGHT = 480
 
 
+def colorize_depth_img(img, max_var):
+    img_colorized = np.zeros([img.shape[0], img.shape[1], 3]).astype(np.uint8)
+    img_colorized[:, :, 1] = 255
+    img_colorized[:, :, 2] = 255
+    img_hue = img.copy().astype(np.float32)
+    img_hue[np.where(img_hue > max_var)] = 0
+    zero_idx = np.where((img_hue > max_var) | (img_hue == 0))
+    img_hue *= 255.0/max_var
+    img_colorized[:, :, 0] = img_hue.astype(np.uint8)
+    img_colorized = cv2.cvtColor(img_colorized, cv2.COLOR_HSV2RGB)
+    img_colorized[zero_idx[0], zero_idx[1], :] = 0
+    return img_colorized
+
+
+def ir_uc8_normalized_img(img, max_var):
+    img_norm = img.copy().astype(np.float32)
+    img_norm[np.where(img_norm > max_var)] = 0
+    zero_idx = np.where((img_norm > max_var) | (img_norm == 0))
+    img_norm *= 255.0/max_var
+    img_norm_uc8 = np.zeros([img.shape[0], img.shape[1], 3])
+    img_norm_uc8[:, :, 0] = img_norm.astype(np.uint8)
+    img_norm_uc8[:, :, 1] = img_norm.astype(np.uint8)
+    img_norm_uc8[:, :, 2] = img_norm.astype(np.uint8)
+    img_norm_uc8[zero_idx[0], zero_idx[1], :] = 0
+    return img_norm_uc8
+
+
 def main():
     global TOML_PATH_ZENSE
     global DATA_SAVE_DIR
@@ -45,30 +72,16 @@ def main():
     while ((key & 0xFF != ord('q')) or (key & 0xFF != 27)):
         status = zense_mng.update()
         if status:
-            rgb_img = zense_mng.getRGBImage()
+            ir_img = zense_mng.getIRImage()
             depth_img = zense_mng.getDepthImage()
 
-            rgb_img_resized = cv2.resize(rgb_img, (IMAGE_WIDTH, IMAGE_HEIGHT))
+            ir_img_resized = cv2.resize(ir_img, (IMAGE_WIDTH, IMAGE_HEIGHT))
 
-            depth_img_colorized = np.zeros(
-                [IMAGE_HEIGHT, IMAGE_WIDTH, 3]).astype(np.uint8)
-            depth_img_colorized[:, :, 1] = 255
-            depth_img_colorized[:, :, 2] = 255
-
-            _depth_img_zense_hue = depth_img.copy().astype(np.float32)
-            _depth_img_zense_hue[np.where(_depth_img_zense_hue > 2000)] = 0
-            zero_idx = np.where((_depth_img_zense_hue > 2000)
-                                | (_depth_img_zense_hue == 0))
-            _depth_img_zense_hue *= 255.0/2000.0
-
-            depth_img_colorized[:, :,
-                                0] = _depth_img_zense_hue.astype(np.uint8)
-            depth_img_colorized = cv2.cvtColor(
-                depth_img_colorized, cv2.COLOR_HSV2RGB)
-            depth_img_colorized[zero_idx[0], zero_idx[1], :] = 0
+            depth_img_colorized = colorize_depth_img(depth_img, 2000)
+            ir_img_normd = ir_uc8_normalized_img(ir_img_resized, 3840)
 
             frame = np.zeros((IMAGE_HEIGHT*2, IMAGE_WIDTH*2, 3), np.uint8)
-            frame[0:IMAGE_HEIGHT, 0:IMAGE_WIDTH, :] = rgb_img_resized
+            frame[0:IMAGE_HEIGHT, 0:IMAGE_WIDTH, :] = ir_img_normd
             frame[0:IMAGE_HEIGHT, IMAGE_WIDTH:IMAGE_WIDTH *
                   2, :] = depth_img_colorized
 
@@ -78,7 +91,7 @@ def main():
                 cv2.imwrite(osp.join(DATA_SAVE_DIR, "depth", "%06d.png" %
                                      (number_of_saved_frame)), depth_img)
                 cv2.imwrite(osp.join(DATA_SAVE_DIR, "color",
-                                     "%06d.png" % (number_of_saved_frame)), rgb_img)
+                                     "%06d.png" % (number_of_saved_frame)), ir_img)
                 number_of_saved_frame += 1
 
             if cvui.button(frame, 350, IMAGE_HEIGHT+100, 200, 100,  "Erase Images"):
