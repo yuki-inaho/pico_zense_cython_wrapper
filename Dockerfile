@@ -21,7 +21,9 @@ ENV PICOZENSE_LIB="Vzense_SDK_linux/Ubuntu18.04"
 #RUN echo "--- installing zense sdk ---"
 COPY . /app
 RUN mkdir -p /etc/udev/rules.d
-RUN git clone https://github.com/Vzense/Vzense_SDK_linux.git
+RUN git clone https://github.com/Vzense/Vzense_SDK_linux.git && \
+    cd Vzense_SDK_linux && \
+    git checkout 33fe2cbe2ab9cd209611c7a45195a5f72cc65469
 RUN ./install_zense_sdk.sh
 
 RUN apt-get update && \
