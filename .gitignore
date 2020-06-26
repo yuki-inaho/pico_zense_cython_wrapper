@@ -4,5 +4,6 @@ zense_pywrapper.cpp
 zense_pywrapper.cpython-*
 opencv_mat.cpython-*
 camera_parameter.toml
+data/
 
 .vscode/settings.json
