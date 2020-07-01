@@ -6,6 +6,7 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <string>
+#include <vector>
 #include "unistd.h"
 
 typedef struct{
@@ -29,6 +30,12 @@ struct ExtrinsicParameter {
   std::vector<double> rotation;
   std::vector<double> translation;
 };
+
+typedef enum {
+  DeviceClosed = 0,
+  DeviceOpened = 1,
+  DeviceStarted = 2,
+} DeviceState;
 
 bool checkFileExistence(const std::string& str);
 void printCameraParams(CameraParameter cameraParam);

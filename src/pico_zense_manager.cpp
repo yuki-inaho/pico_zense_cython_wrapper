@@ -339,10 +339,10 @@ CameraParameter PicoZenseManager::setCameraParameter_(
   return cameraParam;
 }
 
-CameraParameter PicoZenseManager::setExtrinsicParameter_() {
+ExtrinsicParameter PicoZenseManager::setExtrinsicParameter_() {
   PsReturnStatus status;
   PsCameraExtrinsicParameters pCameraExtrinsicParameters;
-  status = Ps2_GetCameraExtrinsicParameters(deviceHandle, sessionIndex,
+  status = Ps2_GetCameraExtrinsicParameters(deviceHandle, sessionIndex_,
                                             &pCameraExtrinsicParameters);
   if (status != PsReturnStatus::PsRetOK) {
     std::cout << "Ps2_GetCameraExtrinsicParameters failed!" << std::endl;
@@ -352,11 +352,11 @@ CameraParameter PicoZenseManager::setExtrinsicParameter_() {
                                 std::end(pCameraExtrinsicParameters.rotation));
   std::vector<double> _translation(
       std::begin(pCameraExtrinsicParameters.translation),
-      std::end(pCameraExtrinsicParameters.translation));
+      std::end(pCameraExtrinsicParameters.translation)
+  );
   extrinsic_param_.rotation = _rotation;
   extrinsic_param_.translation = _translation;
-
-  return cameraParam;
+  return extrinsic_param_;
 }
 
 bool PicoZenseManager::setPulseCount(uint32_t pulse_count) {
@@ -407,5 +407,48 @@ bool PicoZenseManager::getPulseCountWDR(uint32_t &pulse_count_range1,
   }
   pulse_count_range1 = static_cast<uint32_t>(pwdrPulseCount.pulseCount1);
   pulse_count_range2 = static_cast<uint32_t>(pwdrPulseCount.pulseCount2);
+  return true;
+}
+
+
+bool PicoZenseManager::setDepthRange(std::string given_depth_range) {
+  PsDepthRange targetRange;
+  if (given_depth_range == "Near") {
+    targetRange = PsNearRange;
+  } else if (given_depth_range == "Mid") {
+    targetRange = PsMidRange;
+  } else if (given_depth_range == "Far") {
+    targetRange = PsFarRange;
+  } else {
+    std::cout << "Currently depth range is supported only in [Near, Mid, Far] mode" << std::endl;
+    return false;
+  }
+
+  PsReturnStatus status;
+  status = Ps2_SetDepthRange(deviceHandle, sessionIndex_, targetRange);
+  if (status != PsReturnStatus::PsRetOK) {
+    std::cerr << "Depth range changing is failed" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  PsDepthRange resetRange;
+  status = Ps2_GetDepthRange(deviceHandle, sessionIndex_, &resetRange);
+  if (status != PsReturnStatus::PsRetOK || targetRange != resetRange) {
+    std::cerr << "Depth range changing is failed ()" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  depthRange_ = targetRange;
+
+  if (targetRange == PsNearRange)
+    std::cout << "Set depth range to Near," << std::endl;
+  else if (targetRange == PsMidRange)
+    std::cout << "Set depth range to Mid," << std::endl;
+  else if (targetRange == PsFarRange)
+    std::cout << "Set depth range to Far," << std::endl;
+  else {
+    std::cerr << "Invarid depth range setting detected" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
   return true;
 }

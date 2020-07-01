@@ -43,12 +43,7 @@ class PicoZenseManager {
   bool getPulseCount(uint32_t &pulse_count);
   bool setPulseCountWDR(uint32_t pulse_count_range1, uint32_t pulse_count_range2);
   bool getPulseCountWDR(uint32_t &pulse_count_range1, uint32_t &pulse_count_range2);
-
-  typedef enum {
-    DeviceClosed = 0,
-    DeviceOpened = 1,
-    DeviceStarted = 2,
-  } DeviceState;
+  bool setDepthRange(std::string given_depth_range);
 
   bool isWDR() { return isWDR_; }
   bool isRGB() { return isRGB_; }
@@ -74,5 +69,5 @@ class PicoZenseManager {
   CameraParameter camera_param_rgb_;
   ExtrinsicParameter extrinsic_param_;
   CameraParameter setCameraParameter_(PsSensorType sensor_type);
-  CameraParameter setExtrinsicParameter_();
+  ExtrinsicParameter setExtrinsicParameter_();
 };
