@@ -51,37 +51,15 @@ void PicoZenseWrapperImpl::setup(std::string cfgParamPath, std::string camKey,
   std::cout << "Serial number allocated to Zense Manager : " << serial_no_
             << std::endl;
 
-<<<<<<< HEAD
   manager_.openDevice(device_index_);
   if (!manager_.setupDevice(range1, range2, isRGB)) {
-=======
-  std::string distortionKey = camKey + "_Undistortion";
-
-  // If TOML configuration file doesn't contain any undistortion
-  // description(table), undistortion process will be skip
-  if (cfgParam.checkExistanceTable(distortionKey)) {
-    undistortion_flag = cfgParam.readBoolData(distortionKey, "flag");
-  } else {
-    undistortion_flag = false;
-  }
-  if (undistortion_flag == true) {
-    undistorter = PicoZenseUndistorter(cfgParam, distortionKey);
-  }
-
-  manager_.openDevice(device_index_);
-  if (!manager_.setupDevice(device_index_, range1, range2, isRGB)) {
->>>>>>> develop
     close();
     std::cerr << "Could not setup device" << std::endl;
     std::exit(EXIT_FAILURE);
   }
   if (range2 < 0) range2 = range1;
 
-<<<<<<< HEAD
   camera_param_ = manager_.getCameraParameter(0);
-=======
-  camera_param_ = manager_.getCameraParameter(device_index_, 0);
->>>>>>> develop
   if (!(isWithinError(camera_param_.k5, camera_factory_param.k5) &&
         isWithinError(camera_param_.k6, camera_factory_param.k6))) {
     close();
@@ -89,11 +67,7 @@ void PicoZenseWrapperImpl::setup(std::string cfgParamPath, std::string camKey,
     std::exit(EXIT_FAILURE);
   }
 
-<<<<<<< HEAD
   if (!manager_.startDevice()) {
-=======
-  if (!manager_.startDevice(device_index_)) {
->>>>>>> develop
     close();
     std::cerr << "Could not start device" << std::endl;
     std::exit(EXIT_FAILURE);
@@ -113,11 +87,7 @@ void PicoZenseWrapperImpl::setup(int32_t device_index__) {
   isIR = isRGB && !isWDR;
 
   manager_.openDevice(device_index_);
-<<<<<<< HEAD
   if (!manager_.setupDevice(range1, range2, isRGB)) {
-=======
-  if (!manager_.setupDevice(device_index_, range1, range2, isRGB)) {
->>>>>>> develop
     close();
     std::cerr << "Could not setup device" << std::endl;
     std::exit(EXIT_FAILURE);
@@ -125,7 +95,6 @@ void PicoZenseWrapperImpl::setup(int32_t device_index__) {
   if (range2 < 0) range2 = range1;
 
   std::string camera_name = "Camera0";
-<<<<<<< HEAD
   serial_no_ = manager_.getSerialNumber();
 
   //TODO: rewrite RGB flag expricitly
@@ -134,25 +103,6 @@ void PicoZenseWrapperImpl::setup(int32_t device_index__) {
   extrinsic_param_ = manager_.getExtrinsicParameter();
 
   if (!manager_.startDevice()) {
-=======
-  int32_t lenSerial = 100;
-  char buffSerial[lenSerial];
-  PsReturnStatus status;
-  status = PsGetProperty(device_index_, PsPropertySN_Str, buffSerial, &lenSerial);
-  if (status != PsReturnStatus::PsRetOK) {
-    std::cout << "Aquisition of Device Serial Number failed !" << std::endl;
-  }
-  serial_no_ = std::string(buffSerial);
-  std::cout << "Serial number allocated to Zense Manager : " << serial_no_
-            << std::endl;
-
-  //TODO: rewrite RGB flag expricitly
-  camera_param_ = manager_.getCameraParameter(device_index_, 0);
-  camera_param_rgb_ = manager_.getCameraParameter(device_index_, 1);
-  extrinsic_param_ = manager_.getExtrinsicParameter(device_index_);
-
-  if (!manager_.startDevice(device_index_)) {
->>>>>>> develop
     close();
     std::cerr << "Could not start device" << std::endl;
     std::exit(EXIT_FAILURE);
@@ -161,11 +111,7 @@ void PicoZenseWrapperImpl::setup(int32_t device_index__) {
   std::cout << "Camera setup is finished!" << std::endl;
 }
 
-<<<<<<< HEAD
 void PicoZenseWrapperImpl::close() { manager_.closeDevice(); }
-=======
-void PicoZenseWrapperImpl::close() { manager_.closeDevice(device_index_); }
->>>>>>> develop
 
 int PicoZenseWrapperImpl::getDepthRange() { return depth_range1; }
 
@@ -183,11 +129,7 @@ bool PicoZenseWrapperImpl::monitoring_skip() {
     std::exit(EXIT_FAILURE);
   }
 
-<<<<<<< HEAD
   if (!manager_.updateDevice()) {
-=======
-  if (!manager_.updateDevice(device_index_)) {
->>>>>>> develop
     std::cout << "Device not updated. Skipping..." << std::endl;
     usleep(33333);
     return false;
@@ -199,15 +141,9 @@ template <>
 bool PicoZenseWrapperImpl::_update<ZenseMode::RGBD>() {
   bool is_success = true;
   if (!monitoring_skip()) return false;
-<<<<<<< HEAD
   rgb_image = manager_.getRgbImage().clone();
   depth_range1 = (DepthRange)manager_.getDepthRange();
   depth_image_range1 = manager_.getDepthImage().clone();
-=======
-  rgb_image = manager_.getRgbImage(device_index_).clone();
-  depth_range1 = (DepthRange)manager_.getDepthRange(device_index_);
-  depth_image_range1 = manager_.getDepthImage(device_index_).clone();
->>>>>>> develop
   if (rgb_image.cols == 0 || depth_image_range1.cols == 0) is_success = false;
   skip_counter_[depth_range1] = 0;
   return is_success;
@@ -217,17 +153,10 @@ template <>
 bool PicoZenseWrapperImpl::_update<ZenseMode::RGBDIR>() {
   bool is_success = true;
   if (!monitoring_skip()) return false;
-<<<<<<< HEAD
   rgb_image = manager_.getRgbImage().clone();
   ir_image = manager_.getIRImage().clone();
   depth_image_range1 = manager_.getDepthImage().clone();
   depth_range1 = (DepthRange)manager_.getDepthRange();
-=======
-  rgb_image = manager_.getRgbImage(device_index_).clone();
-  ir_image = manager_.getIRImage(device_index_).clone();
-  depth_image_range1 = manager_.getDepthImage(device_index_).clone();
-  depth_range1 = (DepthRange)manager_.getDepthRange(device_index_);
->>>>>>> develop
   flag_wdr_range_updated_[depth_range1];
   if (is_success && (ir_image.cols == 0 || depth_image_range1.cols == 0))
     is_success = false;
@@ -239,13 +168,8 @@ template <>
 bool PicoZenseWrapperImpl::_update<ZenseMode::WDR>() {
   bool is_success = true;
   if (!monitoring_skip()) return false;
-<<<<<<< HEAD
   DepthRange _depth_range = (DepthRange)manager_.getDepthRange();
   cv::Mat _depth_image = manager_.getDepthImage().clone();
-=======
-  DepthRange _depth_range = (DepthRange)manager_.getDepthRange(device_index_);
-  cv::Mat _depth_image = manager_.getDepthImage(device_index_).clone();
->>>>>>> develop
   if (_depth_range == range1) {
     depth_range1 = _depth_range;
     depth_image_range1 = _depth_image;
@@ -280,7 +204,6 @@ bool PicoZenseWrapperImpl::_update<ZenseMode::WDR>() {
   return is_success_wdr;
 }
 
-<<<<<<< HEAD
 template <>
 bool PicoZenseWrapperImpl::_update<ZenseMode::DepthIR>() {
   bool is_success = true;
@@ -294,8 +217,6 @@ bool PicoZenseWrapperImpl::_update<ZenseMode::DepthIR>() {
   return is_success;
 }
 
-=======
->>>>>>> develop
 bool PicoZenseWrapperImpl::update() {
   // ToDo: Check coverage
   bool status = false;
@@ -321,13 +242,8 @@ bool PicoZenseWrapperImpl::update() {
 
 bool PicoZenseWrapperImpl::setDepthRange(std::string given_range) {
   if (!isWDR) {
-<<<<<<< HEAD
     bool status = manager_.setDepthRange(given_range);
     range1 = manager_.getDepthRange();
-=======
-    bool status = manager_.setDepthRange(device_index_, given_range);
-    range1 = manager_.getDepthRange(device_index_);
->>>>>>> develop
     range2 = range1;
   } else {
     std::cout << "Currently depth range change function supports not WDR mode"

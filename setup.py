@@ -9,7 +9,6 @@ import pkgconfig
 zense_cflags = pkgconfig.cflags('libpicozense')
 zense_libs = pkgconfig.libs('libpicozense')
 
-<<<<<<< HEAD
 zense_install_dir = os.environ["PICOZENSE_INSTALL_DIR"]
 cvlib_folder = os.path.join(
     zense_install_dir,
@@ -21,10 +20,6 @@ cvlib_include_folder = os.path.join(
     'Thirdparty', 'opencv-3.4.1', 'include'
 )
 
-=======
-# TODO:Rewrite without hardcoding
-cvlib_folder = os.path.join('/usr', 'local', 'lib')
->>>>>>> develop
 lib_dirs = [cvlib_folder]
 
 cvlibs = list()
@@ -42,11 +37,7 @@ setup(
                       sources=[
                           "scripts/zense_pywrapper.pyx", "src/pico_zense_wrapper_impl.cpp",
                           "src/common.cpp", "src/parameter_manager.cpp",
-<<<<<<< HEAD
                           "src/pico_zense_manager.cpp"
-=======
-                          "src/pico_zense_manager.cpp", "src/pico_zense_undistorter.cpp"
->>>>>>> develop
                       ],
                       extra_compile_args=[
                           "-std=gnu++11",
@@ -57,7 +48,6 @@ setup(
                       ],
                       include_dirs=[
                           numpy.get_include(),
-<<<<<<< HEAD
                           cvlib_include_folder,
                           'include',
                       ],
@@ -65,15 +55,6 @@ setup(
                       libraries=cvlibs + ["vzense_api", "ImgPreProcess"],
                       language="c++",
                       )
-=======
-                          os.path.join(sys.prefix, 'include', 'opencv2'),
-                          'include'
-                      ],
-                      library_dirs=lib_dirs,
-                      libraries=cvlibs + ["picozense_api"],
-                      language="c++",
-                      ),
->>>>>>> develop
         ]
     ),
     cmdclass={'build_ext': build_ext},
