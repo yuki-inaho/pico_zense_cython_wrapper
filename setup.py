@@ -2,7 +2,6 @@ from setuptools import setup, Extension
 from Cython.Build import cythonize
 from Cython.Distutils import build_ext
 import numpy
-import sys
 import os
 import glob
 import pkgconfig
@@ -38,7 +37,7 @@ setup(
                       sources=[
                           "scripts/zense_pywrapper.pyx", "src/pico_zense_wrapper_impl.cpp",
                           "src/common.cpp", "src/parameter_manager.cpp",
-                          "src/pico_zense_manager.cpp", "src/pico_zense_undistorter.cpp"
+                          "src/pico_zense_manager.cpp"
                       ],
                       extra_compile_args=[
                           "-std=gnu++11",
@@ -50,22 +49,11 @@ setup(
                       include_dirs=[
                           numpy.get_include(),
                           cvlib_include_folder,
-                          'include'
+                          'include',
                       ],
-                      include_dirs=[numpy.get_include(), cvlib_include_folder],
                       library_dirs=lib_dirs,
                       libraries=cvlibs + ["vzense_api", "ImgPreProcess"],
                       language="c++",
-                      ),
-
-            Extension("opencv_mat",
-                      sources=["opencv_mat.pyx"],
-                      include_dirs=[numpy.get_include(),
-                                    cvlib_include_folder,
-                                    ],
-                      library_dirs=lib_dirs,
-                      libraries=cvlibs,
-                      language="c++"
                       )
         ]
     ),
