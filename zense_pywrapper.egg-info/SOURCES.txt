@@ -1,0 +1,11 @@
+README.md
+setup.py
+scripts/zense_pywrapper.cpp
+src/common.cpp
+src/parameter_manager.cpp
+src/pico_zense_manager.cpp
+src/pico_zense_wrapper_impl.cpp
+zense_pywrapper.egg-info/PKG-INFO
+zense_pywrapper.egg-info/SOURCES.txt
+zense_pywrapper.egg-info/dependency_links.txt
+zense_pywrapper.egg-info/top_level.txt

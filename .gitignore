@@ -9,10 +9,15 @@ opencv_mat.cpp
 zense_pywrapper.cpp
 zense_pywrapper.cpython-*
 opencv_mat.cpython-*
+<<<<<<< HEAD
+camera_parameter.toml
+=======
 zense_pywrapper.so
 opencv_mat.so
 
 #Apps
 cfg/camera_parameter.toml
+>>>>>>> develop
 data/
 
+.vscode/settings.json
