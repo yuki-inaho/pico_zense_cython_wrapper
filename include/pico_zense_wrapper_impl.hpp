@@ -5,6 +5,10 @@
 #include "common.hpp"
 #include "parameter_manager.hpp"
 #include "pico_zense_manager.hpp"
+<<<<<<< HEAD
+=======
+#include "pico_zense_undistorter.hpp"
+>>>>>>> develop
 
 #define INIT_SKIP_COUNTER -200
 #define MAX_SKIP_COUNTER 60
@@ -27,7 +31,11 @@ class PicoZenseWrapperImpl {
              int32_t device_index__);
   void setup(int32_t device_index__);
   bool isWithinError(float val, float ref) {
+<<<<<<< HEAD
     int32_t depth_range = manager_.getDepthRange();
+=======
+    int32_t depth_range = manager_.getDepthRange(device_index_);
+>>>>>>> develop
     const double fract_err = 1e-5;
     return (std::fabs(val - ref) <= fract_err * std::fabs(ref));
   };
@@ -55,10 +63,17 @@ class PicoZenseWrapperImpl {
   std::vector<int> getDepthRangeWDR();
 
   bool getPulseCount(uint32_t &pulseCount) {
+<<<<<<< HEAD
     return manager_.getPulseCount(pulseCount);
   }
   bool setPulseCount(uint32_t pulseCount) {
     return manager_.setPulseCount(pulseCount);
+=======
+    return manager_.getPulseCount(device_index_, pulseCount);
+  }
+  bool setPulseCount(uint32_t pulseCount) {
+    return manager_.setPulseCount(device_index_, pulseCount);
+>>>>>>> develop
   }
   bool setDepthRange(std::string given_range);
 
@@ -93,6 +108,13 @@ class PicoZenseWrapperImpl {
   CameraParameter camera_param_rgb_;
   ExtrinsicParameter extrinsic_param_;
 
+<<<<<<< HEAD
+=======
+  bool undistortion_flag;
+  PicoZenseUndistorter undistorter;
+
+
+>>>>>>> develop
   // For template speciallization, defined actual process is written in .cpp
   bool monitoring_skip();
   template <ZenseMode T>

@@ -62,9 +62,9 @@ cdef object Mat2np(Mat m, bool is_UC16=False):
     cdef size_t len = m.rows*m.cols*m.elemSize()
 
     # Fill buffer
-    PyBuffer_FillInfo( & buf_info, NULL, m.data, len, False, PyBUF_FULL_RO)
+    PyBuffer_FillInfo(& buf_info, NULL, m.data, len, False, PyBUF_FULL_RO)
     # Get Pyobject from buffer data
-    Pydata  = PyMemoryView_FromBuffer( & buf_info)
+    Pydata  = PyMemoryView_FromBuffer(& buf_info)
 
     # Create ndarray with data
     # the dimension of the output array is 2 if the image is grayscale
