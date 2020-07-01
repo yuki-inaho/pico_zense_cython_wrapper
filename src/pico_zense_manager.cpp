@@ -3,15 +3,15 @@
 using namespace std;
 
 PicoZenseManager::PicoZenseManager() {
-  for (int deviceIndex_ = 0; deviceIndex_ < MAX_DEVICECOUNT; deviceIndex_++) {
+  for (int deviceIndex__ = 0; deviceIndex__ < MAX_DEVICECOUNT; deviceIndex__++) {
     deviceState_ = DeviceClosed;
     serialNumber_ = "";
     isWDR_ = false;
     isRGB_ = false;
   }
 
-  PsReturnStatus status;
 
+  PsReturnStatus status;
 GET:
   deviceCount_ = 0;
   status = Ps2_GetDeviceCount(&deviceCount_);
@@ -19,9 +19,11 @@ GET:
     std::cout << "PsGetDeviceCount failed!" << std::endl;
     exit(EXIT_FAILURE);
   }
+  if (0 == deviceCount_) {
+    std::cout << "Waiting for device connection ..." << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     goto GET;
   }
-
   pDeviceListInfo = new PsDeviceInfo[deviceCount_];
   status = Ps2_GetDeviceListInfo(pDeviceListInfo, deviceCount_);
   if (status != PsReturnStatus::PsRetOK) {
@@ -36,26 +38,6 @@ GET:
   }
 
   sessionIndex_ = 0;
-    cout << "Device index is out of range!" << endl;
-    return false;
-  }
-
-  if (deviceState_ != DeviceClosed) {
-    cout << "Device is already opened" << endl;
-    return false;
-  }
-
-  PsReturnStatus status;
-  std::string uri_string = std::string(pDeviceListInfo[deviceIndex_].uri);
-  std::cout << "Try to open :" << uri_string << std::endl;
-  status = Ps2_OpenDevice(uri_string.c_str(), &deviceHandle);
-  if (status != PsReturnStatus::PsRetOK) {
-    cout << "PsOpenDevice failed!" << endl;
-    return false;
-  }
-
-  deviceState_ = DeviceOpened;
-  return true;
 }
 
 void PicoZenseManager::closeDevice() {
