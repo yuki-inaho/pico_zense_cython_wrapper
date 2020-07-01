@@ -31,6 +31,12 @@ struct ExtrinsicParameter {
   std::vector<double> translation;
 };
 
+typedef enum {
+  DeviceClosed = 0,
+  DeviceOpened = 1,
+  DeviceStarted = 2,
+} DeviceState;
+
 bool checkFileExistence(const std::string& str);
 void printCameraParams(CameraParameter cameraParam);
 cv::Mat cvtDepth2ColorScale(cv::Mat depthImg);
