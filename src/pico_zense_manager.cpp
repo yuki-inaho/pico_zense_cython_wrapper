@@ -10,7 +10,6 @@ PicoZenseManager::PicoZenseManager() {
     isRGB_ = false;
   }
 
-
   PsReturnStatus status;
 GET:
   deviceCount_ = 0;
@@ -52,6 +51,32 @@ void PicoZenseManager::closeDevice() {
     std::cout << "Device Closed: " << deviceIndex_ << std::endl;
   }
   deviceState_ = DeviceClosed;
+}
+
+bool PicoZenseManager::openDevice(int32_t deviceIndex) {
+  deviceIndex_ = (uint32_t)deviceIndex;
+  cout << "Opening device : " << deviceIndex_ << endl;
+  if (!(deviceIndex_ >= 0 && deviceIndex_ < deviceCount_)) {
+    cout << "Device index is out of range!" << endl;
+    return false;
+  }
+
+  if (deviceState_ != DeviceClosed) {
+    cout << "Device is already opened" << endl;
+    return false;
+  }
+
+  PsReturnStatus status;
+  std::string uri_string = std::string(pDeviceListInfo[deviceIndex_].uri);
+  std::cout << "Try to open :" << uri_string << std::endl;
+  status = Ps2_OpenDevice(uri_string.c_str(), &deviceHandle);
+  if (status != PsReturnStatus::PsRetOK) {
+    cout << "PsOpenDevice failed!" << endl;
+    return false;
+  }
+
+  deviceState_ = DeviceOpened;
+  return true;
 }
 
 bool PicoZenseManager::startDevice() {
