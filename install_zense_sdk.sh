@@ -24,4 +24,4 @@ ldconfig
 cd /app
 
 pip install -r requirements.txt
-#python setup.py install
+python setup.py install

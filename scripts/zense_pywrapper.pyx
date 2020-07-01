@@ -1,5 +1,5 @@
 # distutils: language = c++
-# distutils: sources = src/pico_zense_wrapper_impl.cpp
+# distutils: sources = src/pico_zense_wrapper_impl.cpp src/pico_zense_manager.cpp src/parameter_manager.cpp src/common.cpp
 
 import sys
 import os
