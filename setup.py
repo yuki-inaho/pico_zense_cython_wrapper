@@ -1,6 +1,7 @@
 from setuptools import setup, Extension
 from Cython.Build import cythonize
 from Cython.Distutils import build_ext
+
 import numpy
 import os
 import glob
@@ -35,21 +36,24 @@ setup(
         [
             Extension("zense_pywrapper",
                       sources=[
-                          "scripts/zense_pywrapper.pyx", "src/pico_zense_wrapper_impl.cpp",
-                          "src/common.cpp", "src/parameter_manager.cpp",
-                          "src/pico_zense_manager.cpp"
+                          "src/common.cpp",
+                          "src/pico_zense_wrapper_impl.cpp",
+                          "src/parameter_manager.cpp",
+                          "src/pico_zense_manager.cpp",
+                          "scripts/zense_pywrapper.pyx",
                       ],
                       extra_compile_args=[
                           "-std=gnu++11",
                           "-O3",
                           zense_cflags,
                           zense_libs,
-                          "-w",
+                          "-w"
                       ],
                       include_dirs=[
                           numpy.get_include(),
                           cvlib_include_folder,
                           'include',
+                          'src',
                       ],
                       library_dirs=lib_dirs,
                       libraries=cvlibs + ["vzense_api", "ImgPreProcess"],
@@ -58,4 +62,5 @@ setup(
         ]
     ),
     cmdclass={'build_ext': build_ext},
+    zip_safe=True,
 )
