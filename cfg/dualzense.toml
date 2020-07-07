@@ -1,0 +1,107 @@
+[General]
+capture_frames = 10
+n_camera = 1
+smoothing_filter = 1
+sensor_id = "Camera0"
+
+[Camera0_Factory]
+fx = 624.406982422
+fy = 624.155578613
+cx = 335.725189209
+cy = 242.80821228
+p1 = -0.000532481062692
+p2 = -0.00110711832531
+k1 = -0.124605514109
+k2 = 0.132828116417
+k3 = 0.0216029603034
+k4 = 0.13571369648
+k5 = 0.0328321754932
+k6 = 0.101191550493
+
+[Camera0_RGB_Factory]
+fx = 0
+fy = 0
+cx = 0
+cy = 0
+p1 = 0
+p2 = 0
+k1 = 0
+k2 = 0
+k3 = 0
+k4 = 0
+k5 = 0
+k6 = 0
+
+[Camera0_Extrinsic_Factory]
+tx = 0
+ty = 0
+tz = 0
+r11 = 0
+r12 = 0
+r13 = 0
+r21 = 0
+r22 = 0
+r23 = 0
+r31 = 0
+r32 = 0
+r33 = 0
+
+[Camera0]
+camera_name = "camera0"
+serial_no = "PD71A1EGD8280014P"
+range1 = 0
+range2 = 2
+rgb_image = -1
+width = 640
+height = 480
+
+[Camera1_Factory]
+fx = 625.838134766
+fy = 625.345947266
+cx = 336.288879395
+cy = 226.770614624
+p1 = -0.000610783987213
+p2 = -0.000483633135445
+k1 = -0.118157736957
+k2 = 0.289853870869
+k3 = -0.160573810339
+k4 = 0.137047633529
+k5 = 0.220362618566
+k6 = -0.106260888278
+
+[Camera1_RGB_Factory]
+fx = 0
+fy = 0
+cx = 0
+cy = 0
+p1 = 0
+p2 = 0
+k1 = 0
+k2 = 0
+k3 = 0
+k4 = 0
+k5 = 0
+k6 = 0
+
+[Camera1_Extrinsic_Factory]
+tx = 0
+ty = 0
+tz = 0
+r11 = 0
+r12 = 0
+r13 = 0
+r21 = 0
+r22 = 0
+r23 = 0
+r31 = 0
+r32 = 0
+r33 = 0
+
+[Camera1]
+camera_name = "camera1"
+serial_no = "PD71A1EGD8280151P"
+range1 = 0
+range2 = 2
+rgb_image = -1
+width = 640
+height = 480

@@ -73,11 +73,9 @@ void PicoZenseWrapperImpl::setup(std::string cfgParamPath, std::string camKey,
     std::exit(EXIT_FAILURE);
   }
 
-  /*
-  camera_param_ = manager_.getCameraParameter(0);
-  camera_param_rgb_ = manager_.getCameraParameter(1);
+  camera_param_ = manager_.getCameraParameter(PsDepthSensor);
+  camera_param_rgb_ = manager_.getCameraParameter(PsRgbSensor);
   extrinsic_param_ = manager_.getExtrinsicParameter();
-  */
 
   std::cout << "Camera setup is finished!" << std::endl;
 }
@@ -109,8 +107,8 @@ void PicoZenseWrapperImpl::setup(int32_t device_index__) {
   serial_no_ = manager_.getSerialNumber();
 
   //TODO: rewrite RGB flag expricitly
-  camera_param_ = manager_.getCameraParameter(0);
-  camera_param_rgb_ = manager_.getCameraParameter(1);
+  camera_param_ = manager_.getCameraParameter(PsDepthSensor);
+  camera_param_rgb_ = manager_.getCameraParameter(PsRgbSensor);
   extrinsic_param_ = manager_.getExtrinsicParameter();
 
 
