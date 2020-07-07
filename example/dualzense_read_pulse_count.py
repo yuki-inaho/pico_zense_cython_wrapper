@@ -4,7 +4,6 @@ import toml
 import numpy as np
 from zense_pywrapper import PyPicoZenseManager
 import cv2
-import cvui
 
 N_SENSORS = 4
 WDR_RANGE1_PULSE_COUNT = 280
@@ -53,8 +52,6 @@ zense_mng_left = PyPicoZenseManager(left_zense_index, CFG_PARAM_PATH, "Camera0")
 zense_mng_right = PyPicoZenseManager(right_zense_index, CFG_PARAM_PATH, "Camera1")
 zense_mng_left.set_pulse_count_WDR(WDR_RANGE1_PULSE_COUNT, WDR_RANGE2_PULSE_COUNT)
 zense_mng_right.set_pulse_count_WDR(WDR_RANGE1_PULSE_COUNT, WDR_RANGE2_PULSE_COUNT)
-
-cvui.init(WINDOW_NAME)
 
 while True:
     status = zense_mng_left.update()
