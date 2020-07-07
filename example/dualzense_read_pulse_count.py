@@ -1,7 +1,5 @@
 #! /usr/bin/python
-#  capture and visualize WDR-Depth images using zense (range1 = {>0, e.g. 0}, range2 = {>0, e.g. 0}, rgb_image != 1)
 import os
-import sys
 import toml
 import numpy as np
 from zense_pywrapper import PyPicoZenseManager
@@ -44,22 +42,25 @@ dict_toml = toml.load(CFG_PARAM_PATH)
 
 zenses_for_serial = [PyPicoZenseManager(i) for i in range(N_SENSORS)]
 serial_number_list = [zenses_for_serial[i].serial_number for i in range(N_SENSORS)]
+del zenses_for_serial
+
 left_zense_sn = dict_toml["Camera0"]["serial_no"]
 right_zense_sn = dict_toml["Camera1"]["serial_no"]
 left_zense_index = serial_number_list.index(left_zense_sn)
 right_zense_index = serial_number_list.index(right_zense_sn)
-zense_mng_0 = PyPicoZenseManager(left_zense_index, CFG_PARAM_PATH, "Camera0")
-zense_mng_1 = PyPicoZenseManager(right_zense_index, CFG_PARAM_PATH, "Camera1")
-zense_mng_0.set_pulse_count_WDR(WDR_RANGE1_PULSE_COUNT, WDR_RANGE2_PULSE_COUNT)
-zense_mng_1.set_pulse_count_WDR(WDR_RANGE1_PULSE_COUNT, WDR_RANGE2_PULSE_COUNT)
+
+zense_mng_left = PyPicoZenseManager(left_zense_index, CFG_PARAM_PATH, "Camera0")
+zense_mng_right = PyPicoZenseManager(right_zense_index, CFG_PARAM_PATH, "Camera1")
+zense_mng_left.set_pulse_count_WDR(WDR_RANGE1_PULSE_COUNT, WDR_RANGE2_PULSE_COUNT)
+zense_mng_right.set_pulse_count_WDR(WDR_RANGE1_PULSE_COUNT, WDR_RANGE2_PULSE_COUNT)
 
 cvui.init(WINDOW_NAME)
 
 while True:
-    status = zense_mng_0.update()
-    status &= zense_mng_1.update()
+    status = zense_mng_left.update()
+    status &= zense_mng_right.update()
     if status:
-        pulcnt_wdr_0 = zense_mng_0.get_pulse_count_WDR()
-        pulcnt_wdr_1 = zense_mng_1.get_pulse_count_WDR()
-        print("zense(index=0) :range1={}, range2={}".format(pulcnt_wdr_0[0], pulcnt_wdr_0[1]))
-        print("zense(index=1) :range1={}, range2={} \n".format(pulcnt_wdr_1[0], pulcnt_wdr_1[1]))
+        pulcnt_wdr_left = zense_mng_left.get_pulse_count_WDR()
+        pulcnt_wdr_right = zense_mng_right.get_pulse_count_WDR()
+        print("zense(index=0) :range1={}, range2={}".format(pulcnt_wdr_left[0], pulcnt_wdr_left[1]))
+        print("zense(index=1) :range1={}, range2={} \n".format(pulcnt_wdr_right[0], pulcnt_wdr_right[1]))
