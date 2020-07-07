@@ -73,6 +73,12 @@ void PicoZenseWrapperImpl::setup(std::string cfgParamPath, std::string camKey,
     std::exit(EXIT_FAILURE);
   }
 
+  /*
+  camera_param_ = manager_.getCameraParameter(0);
+  camera_param_rgb_ = manager_.getCameraParameter(1);
+  extrinsic_param_ = manager_.getExtrinsicParameter();
+  */
+
   std::cout << "Camera setup is finished!" << std::endl;
 }
 
@@ -82,11 +88,16 @@ void PicoZenseWrapperImpl::setup(int32_t device_index__) {
                     // immediately after termination and rebooting
   range1 = 0;
   range2 = -1;
-  isRGB = 1;
+  isRGB = false;
   isWDR = (range1 >= 0) && (range2 >= 0);
   isIR = isRGB && !isWDR;
 
   manager_.openDevice(device_index_);
+  if (!manager_.startDevice()) {
+    close();
+    std::cerr << "Could not start device" << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
   if (!manager_.setupDevice(range1, range2, isRGB)) {
     close();
     std::cerr << "Could not setup device" << std::endl;
@@ -102,11 +113,6 @@ void PicoZenseWrapperImpl::setup(int32_t device_index__) {
   camera_param_rgb_ = manager_.getCameraParameter(1);
   extrinsic_param_ = manager_.getExtrinsicParameter();
 
-  if (!manager_.startDevice()) {
-    close();
-    std::cerr << "Could not start device" << std::endl;
-    std::exit(EXIT_FAILURE);
-  }
 
   std::cout << "Camera setup is finished!" << std::endl;
 }

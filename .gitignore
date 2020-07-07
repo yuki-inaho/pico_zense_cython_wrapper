@@ -17,3 +17,6 @@ cfg/camera_parameter.toml
 data/
 
 .vscode/settings.json
+zense_pywrapper.egg-info
+dist/
+build/
