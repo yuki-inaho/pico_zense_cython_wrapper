@@ -42,20 +42,26 @@ dict_toml = toml.load(CFG_PARAM_PATH)
 zenses_for_serial = [PyPicoZenseManager(i) for i in range(N_SENSORS)]
 serial_number_list = [zenses_for_serial[i].serial_number for i in range(N_SENSORS)]
 del zenses_for_serial
-
 left_zense_sn = dict_toml["Camera0"]["serial_no"]
 right_zense_sn = dict_toml["Camera1"]["serial_no"]
 left_zense_index = serial_number_list.index(left_zense_sn)
 right_zense_index = serial_number_list.index(right_zense_sn)
+other_zense_idxs = np.setdiff1d(np.arange(4), [left_zense_index, right_zense_index])
+
 
 zense_mng_left = PyPicoZenseManager(left_zense_index, CFG_PARAM_PATH, "Camera0")
 zense_mng_right = PyPicoZenseManager(right_zense_index, CFG_PARAM_PATH, "Camera1")
 zense_mng_left.set_pulse_count_WDR(WDR_RANGE1_PULSE_COUNT, WDR_RANGE2_PULSE_COUNT)
 zense_mng_right.set_pulse_count_WDR(WDR_RANGE1_PULSE_COUNT, WDR_RANGE2_PULSE_COUNT)
 
+zense_mng_sidecar0 = PyPicoZenseManager(other_zense_idxs[0])
+zense_mng_sidecar1 = PyPicoZenseManager(other_zense_idxs[1])
+
 while True:
     status = zense_mng_left.update()
     status &= zense_mng_right.update()
+    status &= zense_mng_sidecar0.update()
+    status &= zense_mng_sidecar1.update()
     if status:
         pulcnt_wdr_left = zense_mng_left.get_pulse_count_WDR()
         pulcnt_wdr_right = zense_mng_right.get_pulse_count_WDR()
