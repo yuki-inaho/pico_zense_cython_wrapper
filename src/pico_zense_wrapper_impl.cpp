@@ -52,6 +52,11 @@ void PicoZenseWrapperImpl::setup(std::string cfgParamPath, std::string camKey,
             << std::endl;
 
   manager_.openDevice(device_index_);
+  if (!manager_.startDevice()) {
+    close();
+    std::cerr << "Could not start device" << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
   if (!manager_.setupDevice(range1, range2, isRGB)) {
     close();
     std::cerr << "Could not setup device" << std::endl;
@@ -59,17 +64,11 @@ void PicoZenseWrapperImpl::setup(std::string cfgParamPath, std::string camKey,
   }
   if (range2 < 0) range2 = range1;
 
-  camera_param_ = manager_.getCameraParameter(0);
+  camera_param_ = manager_.getCameraParameter(PsDepthSensor);
   if (!(isWithinError(camera_param_.k5, camera_factory_param.k5) &&
         isWithinError(camera_param_.k6, camera_factory_param.k6))) {
     close();
     std::cerr << "Erroneous internal parameters. Exiting..." << std::endl;
-    std::exit(EXIT_FAILURE);
-  }
-
-  if (!manager_.startDevice()) {
-    close();
-    std::cerr << "Could not start device" << std::endl;
     std::exit(EXIT_FAILURE);
   }
 

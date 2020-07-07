@@ -36,12 +36,12 @@ def colorize_depth_img(img, max_var):
 #
 # main rootine
 #
-zense_mng_0 = PyPicoZenseManager(0)
-zense_mng_1 = PyPicoZenseManager(1)
+zense_mng_0 = PyPicoZenseManager(0, CFG_PARAM_PATH, "Camera0")
+zense_mng_1 = PyPicoZenseManager(1, CFG_PARAM_PATH, "Camera1")
 cvui.init(WINDOW_NAME)
 
-zense_mng_0.set_pulse_count(500)
-zense_mng_1.set_pulse_count(500)
+#zense_mng_0.set_pulse_count(500)
+#zense_mng_1.set_pulse_count(500)
 
 while True:
     status = zense_mng_0.update()
