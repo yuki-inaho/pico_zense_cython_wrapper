@@ -88,7 +88,7 @@ void PicoZenseWrapperImpl::setup(int32_t device_index__) {
                     // immediately after termination and rebooting
   range1 = 0;
   range2 = -1;
-  isRGB = false;
+  isRGB = true;
   isWDR = (range1 >= 0) && (range2 >= 0);
   isIR = isRGB && !isWDR;
 

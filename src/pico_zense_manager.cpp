@@ -141,8 +141,6 @@ bool PicoZenseManager::setupDevice(int32_t range1, int32_t range2, bool isRGB) {
     dataMode = PsDepthAndIR_30;
   }
 
-  std::cout << isWDR_ << " " << isRGB_ <<  std::endl;
-  std::cout << sessionIndex_ << std::endl;
   status = Ps2_SetDataMode(deviceHandle, sessionIndex_, (PsDataMode)dataMode);
   if (status != PsReturnStatus::PsRetOK) {
     cout << "PsSetDataMode failed!" << endl;
