@@ -13,5 +13,4 @@ run:
 	--mount type=bind,src=/dev,dst=/dev,readonly \
 	--mount type=bind,src=`pwd`,dst=/app \
 	--volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-	--volume="$(HOME)/.vscode:/root/.vscode" \
 	 pico_zense_cython_wrapper /bin/bash
