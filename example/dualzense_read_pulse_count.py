@@ -8,6 +8,7 @@ from zense_pywrapper import PyPicoZenseManager
 import cv2
 import cvui
 
+N_SENSORS = 4
 WDR_RANGE1_PULSE_COUNT = 280
 WDR_RANGE2_PULSE_COUNT = 600
 
@@ -38,8 +39,17 @@ def colorize_depth_img(img, max_var):
 #
 # main rootine
 #
-zense_mng_0 = PyPicoZenseManager(0, CFG_PARAM_PATH, "Camera0")
-zense_mng_1 = PyPicoZenseManager(1, CFG_PARAM_PATH, "Camera1")
+
+dict_toml = toml.load(CFG_PARAM_PATH)
+
+zenses_for_serial = [PyPicoZenseManager(i) for i in range(N_SENSORS)]
+serial_number_list = [zenses_for_serial[i].serial_number for i in range(N_SENSORS)]
+left_zense_sn = dict_toml["Camera0"]["serial_no"]
+right_zense_sn = dict_toml["Camera1"]["serial_no"]
+left_zense_index = serial_number_list.index(left_zense_sn)
+right_zense_index = serial_number_list.index(right_zense_sn)
+zense_mng_0 = PyPicoZenseManager(left_zense_index, CFG_PARAM_PATH, "Camera0")
+zense_mng_1 = PyPicoZenseManager(right_zense_index, CFG_PARAM_PATH, "Camera1")
 zense_mng_0.set_pulse_count_WDR(WDR_RANGE1_PULSE_COUNT, WDR_RANGE2_PULSE_COUNT)
 zense_mng_1.set_pulse_count_WDR(WDR_RANGE1_PULSE_COUNT, WDR_RANGE2_PULSE_COUNT)
 
