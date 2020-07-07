@@ -56,3 +56,5 @@ serial_no = ""
 range1 = 0
 range2 = -1
 rgb_image = 1
+width=640
+height=480

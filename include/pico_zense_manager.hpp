@@ -5,11 +5,9 @@
 #include "common.hpp"
 
 #define MAX_DEVICECOUNT 10
-
 class PicoZenseManager {
  public:
   PicoZenseManager();
-  ~PicoZenseManager();
 
   bool openDevice(int32_t deviceIndex);
   void closeDevice();

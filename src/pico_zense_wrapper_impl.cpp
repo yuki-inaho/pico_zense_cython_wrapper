@@ -111,6 +111,8 @@ void PicoZenseWrapperImpl::setup(int32_t device_index__) {
   std::cout << "Camera setup is finished!" << std::endl;
 }
 
+
+
 void PicoZenseWrapperImpl::close() { manager_.closeDevice(); }
 
 int PicoZenseWrapperImpl::getDepthRange() { return depth_range1; }
