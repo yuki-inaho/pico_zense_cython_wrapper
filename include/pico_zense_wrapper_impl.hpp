@@ -60,6 +60,8 @@ class PicoZenseWrapperImpl {
   bool setPulseCount(uint32_t pulseCount) {
     return manager_.setPulseCount(pulseCount);
   }
+  bool getPulseCountWDR(uint32_t &pulse_count_range1, uint32_t &pulse_count_range2);
+  bool setPulseCountWDR(uint32_t pulse_count_range1, uint32_t pulse_count_range2);
   bool setDepthRange(std::string given_range);
 
   bool is_rgb() { return isRGB; };

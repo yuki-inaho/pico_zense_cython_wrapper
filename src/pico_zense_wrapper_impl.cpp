@@ -297,4 +297,14 @@ std::vector<std::vector<double>> PicoZenseWrapperImpl::getExtrinsicParameter() {
   return extrinsic_parameter_vec;
 }
 
+// Currently it only supports double range WDR mode.
+bool PicoZenseWrapperImpl::getPulseCountWDR(uint32_t &pulse_count_range1, uint32_t &pulse_count_range2) {
+  bool is_success = manager_.getPulseCountWDR(pulse_count_range1, pulse_count_range2);
+  return is_success;
+}
+
+bool PicoZenseWrapperImpl::setPulseCountWDR(uint32_t pulse_count_range1, uint32_t pulse_count_range2) {
+  return manager_.setPulseCountWDR(pulse_count_range1, pulse_count_range2);
+}
+
 }  // namespace zense

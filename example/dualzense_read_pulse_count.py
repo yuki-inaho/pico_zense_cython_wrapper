@@ -8,13 +8,15 @@ from zense_pywrapper import PyPicoZenseManager
 import cv2
 import cvui
 
+WDR_RANGE1_PULSE_COUNT = 280
+WDR_RANGE2_PULSE_COUNT = 600
+
 drange_dict = {-1: "Undefined", 0: "Near", 1: "Mid", 2: "Far"}
 laser_dict = {"Undefined": 160, "Near": 160, "Mid": 280, "Far": 300}
 
 WINDOW_NAME = "WDR Test"
 IMAGE_WIDTH = 640
 IMAGE_HEIGHT = 480
-
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CFG_PARAM_PATH = os.path.join(SCRIPT_DIR, "../cfg/dualzense.toml")
 
@@ -38,14 +40,16 @@ def colorize_depth_img(img, max_var):
 #
 zense_mng_0 = PyPicoZenseManager(0, CFG_PARAM_PATH, "Camera0")
 zense_mng_1 = PyPicoZenseManager(1, CFG_PARAM_PATH, "Camera1")
-cvui.init(WINDOW_NAME)
+zense_mng_0.set_pulse_count_WDR(WDR_RANGE1_PULSE_COUNT, WDR_RANGE2_PULSE_COUNT)
+zense_mng_1.set_pulse_count_WDR(WDR_RANGE1_PULSE_COUNT, WDR_RANGE2_PULSE_COUNT)
 
-#zense_mng_0.set_pulse_count(500)
-#zense_mng_1.set_pulse_count(500)
+cvui.init(WINDOW_NAME)
 
 while True:
     status = zense_mng_0.update()
     status &= zense_mng_1.update()
     if status:
-        print("zense(index=0) :{}".format(zense_mng_0.get_pulse_count()))
-        print("zense(index=1) :{} \n".format(zense_mng_1.get_pulse_count()))
+        pulcnt_wdr_0 = zense_mng_0.get_pulse_count_WDR()
+        pulcnt_wdr_1 = zense_mng_1.get_pulse_count_WDR()
+        print("zense(index=0) :range1={}, range2={}".format(pulcnt_wdr_0[0], pulcnt_wdr_0[1]))
+        print("zense(index=1) :range1={}, range2={} \n".format(pulcnt_wdr_1[0], pulcnt_wdr_1[1]))

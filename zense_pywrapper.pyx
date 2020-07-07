@@ -105,6 +105,9 @@ cdef extern from "../include/pico_zense_wrapper_impl.hpp" namespace "zense":
         vector[int] getDepthRangeWDR()
         bool getPulseCount(uint32_t & pulseCount)
         bool setPulseCount(uint32_t pulseCount)
+        bool getPulseCountWDR(uint32_t &pulse_count_range1, uint32_t &pulse_count_range2)
+        bool setPulseCountWDR(uint32_t pulse_count_range1, uint32_t pulse_count_range2)
+
         bool setDepthRange(string given_range)
 
 
@@ -244,6 +247,28 @@ cdef class PyPicoZenseManager:
         status = self.thisptr.getPulseCount(_pulse_count)
         if status:
             return _pulse_count
+        else:
+            raise ValueError('Getting pulse count value is failed')
+
+    cpdef get_pulse_count_WDR(self):
+        cdef uint32_t _pulse_count_range1
+        cdef uint32_t _pulse_count_range2
+        status = self.thisptr.getPulseCountWDR(
+            _pulse_count_range1,
+            _pulse_count_range2
+        )
+        if status:
+            return _pulse_count_range1, _pulse_count_range2
+        else:
+            raise ValueError('Getting pulse count value is failed')
+
+    cpdef set_pulse_count_WDR(self, _pulse_count_range1, _pulse_count_range2):
+        status = self.thisptr.setPulseCountWDR(
+            _pulse_count_range1,
+            _pulse_count_range2
+        )
+        if status:
+            return True
         else:
             raise ValueError('Getting pulse count value is failed')
 
