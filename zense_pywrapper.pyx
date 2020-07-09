@@ -89,6 +89,7 @@ cdef extern from "../include/pico_zense_wrapper_impl.hpp" namespace "zense":
         PicoZenseWrapperImpl() except +
         void setup(int32_t device_index_)
         void setup(string cfgParamPath, string camKey, int32_t device_index_)
+        void close()
         bool update()
         bool is_rgb()
         bool is_ir()
@@ -128,6 +129,9 @@ cdef class PyPicoZenseManager:
 
     def __dealloc__(self):
         del self.thisptr
+
+    def close(self):
+        self.thisptr.close()
 
     def update(self):
         cdef Mat rgbImg
@@ -248,7 +252,9 @@ cdef class PyPicoZenseManager:
         if status:
             return _pulse_count
         else:
-            raise ValueError('Getting pulse count value is failed')
+            #raise ValueError('Getting pulse count value is failed')
+            print('Getting pulse count value is failed')
+            return None
 
     cpdef get_pulse_count_WDR(self):
         cdef uint32_t _pulse_count_range1
@@ -260,7 +266,9 @@ cdef class PyPicoZenseManager:
         if status:
             return _pulse_count_range1, _pulse_count_range2
         else:
-            raise ValueError('Getting pulse count value is failed')
+            #raise ValueError('Getting pulse count value is failed')
+            print('Getting pulse count value is failed')
+            return None, None
 
     cpdef set_pulse_count_WDR(self, _pulse_count_range1, _pulse_count_range2):
         status = self.thisptr.setPulseCountWDR(
@@ -270,12 +278,13 @@ cdef class PyPicoZenseManager:
         if status:
             return True
         else:
-            raise ValueError('Getting pulse count value is failed')
+            print('Getting pulse count value is failed')
+            return False
 
     def set_pulse_count(self, __pulse_count):
         status = self.thisptr.setPulseCount(__pulse_count)
         if not status:
-            raise ValueError('Setting pulse count value is failed')
+            print('Setting pulse count value is failed')
 
     def set_depth_range(self, given_range):
         return self.thisptr.setDepthRange(given_range)
