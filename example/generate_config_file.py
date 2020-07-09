@@ -51,8 +51,13 @@ def main(out):
         toml.encoder.dump(dict_toml, f)
         print("generated")
 
-    zense.close()
-    del zense
+    try:
+        zense.close()        
+        del zense
+    except:
+        print("move")
+        pass
+    
 
 
 if __name__ == "__main__":

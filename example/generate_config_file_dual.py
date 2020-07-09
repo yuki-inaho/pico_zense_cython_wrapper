@@ -38,6 +38,8 @@ def main(out):
         toml.encoder.dump(dict_toml, f)
         print("generated")
 
+    zense_0.close()
+    zense_1.close()
     del zense_0
     del zense_1
 

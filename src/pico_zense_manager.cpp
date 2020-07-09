@@ -50,12 +50,7 @@ void PicoZenseManager::closeDevice() {
   } else {
     std::cout << "Device Closed: " << deviceIndex_ << std::endl;
   }
-  /*
-  status = Ps2_Shutdown();
-  if (status != PsReturnStatus::PsRetOK) {
-    std::cout << "Shutdown failed!" << std::endl;
-  }
-  */
+
   deviceState_ = DeviceClosed;
 }
 
@@ -80,7 +75,7 @@ bool PicoZenseManager::openDevice(int32_t deviceIndex) {
     status = Ps2_OpenDevice(pDeviceListInfo[deviceIndex_].uri, &deviceHandle);
     if (status != PsReturnStatus::PsRetOK) {
       if(status == PsRetCameraNotOpened){
-        std::cout << "Waiting for PsCameraOpen acitvation ..." << std::endl;  
+        std::cout << "Waiting for sensor acitvation ..." << std::endl;  
         std::this_thread::sleep_for(std::chrono::seconds(1));
         is_opened = false;
         continue;
@@ -94,31 +89,24 @@ bool PicoZenseManager::openDevice(int32_t deviceIndex) {
 
   PsDeviceInfo pDevices;
   status = Ps2_GetDeviceInfo(&pDevices, deviceIndex_);
-  while(pDevices.status != Opened){
+  do {
     status = Ps2_CloseDevice(deviceHandle);
-    if (status != PsReturnStatus::PsRetOK) {
-      std::cout << "CloseDevice failed!" << std::endl;
-      return false;
-    }
-
     status = Ps2_OpenDevice(pDeviceListInfo[deviceIndex_].uri, &deviceHandle);
     if (status != PsReturnStatus::PsRetOK) {
       if(status == PsRetCameraNotOpened){
-        std::cout << "PsCameraOpen failed..." << std::endl;
+        std::cout << "Sensor refreshing ..." << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(1));
-        is_opened = false;
       }else{
         std::cout << "Device open failed" << std::endl;
         return false;
       }
     }
-
     status = Ps2_GetDeviceInfo(&pDevices, deviceIndex_);
     if (status != PsReturnStatus::PsRetOK) {
-      std::cout << "GetDeviceInfo failed!" << std::endl;
+      std::cout << "GetDeviceInfo failed! :" << status << std::endl;
       return false;
     }
-  }
+  }while(pDevices.status != Opened);
 
   deviceState_ = DeviceOpened;
   return true;
@@ -342,6 +330,8 @@ void PicoZenseManager::getDeviceInfo() {
   PsReturnStatus status;
   PsDeviceInfo pDevices;
   status = Ps2_GetDeviceInfo(&pDevices, deviceIndex_);
+  std::cout << "FW_VER : " << pDevices.fw << std::endl;
+  std::cout << std::endl;
 
   if(pDevices.status == ConnectUNKNOWN){
     std::cout << "ConnectStatus : " << "ConnectUNKNOWN" << std::endl;
