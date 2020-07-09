@@ -15,6 +15,7 @@ class PicoZenseManager {
                    int32_t range2 = PsFarRange, bool isRGB = false);
   bool startDevice();
   bool updateDevice();
+  void getDeviceInfo();
   std::string getSerialNumber() {
     return serialNumber_;
   }

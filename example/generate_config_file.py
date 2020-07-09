@@ -51,6 +51,7 @@ def main(out):
         toml.encoder.dump(dict_toml, f)
         print("generated")
 
+    zense.close()
     del zense
 
 
