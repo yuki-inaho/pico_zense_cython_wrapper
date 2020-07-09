@@ -50,6 +50,10 @@ void PicoZenseManager::closeDevice() {
   } else {
     std::cout << "Device Closed: " << deviceIndex_ << std::endl;
   }
+  status = Ps2_Shutdown();
+  if (status != PsReturnStatus::PsRetOK) {
+    std::cout << "Shutdown failed!" << std::endl;
+  }
   deviceState_ = DeviceClosed;
 }
 

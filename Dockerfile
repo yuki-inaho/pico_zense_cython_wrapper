@@ -28,7 +28,8 @@ ENV PICOZENSE_INSTALL_DIR=/usr/local/PicoZenseSDK_V3
 # Installing Zense SDK v3
 RUN git clone https://github.com/Vzense/Vzense_SDK_linux.git && \
     cd Vzense_SDK_linux && \
-    git checkout 33fe2cbe2ab9cd209611c7a45195a5f72cc65469
+    git checkout 0731133877a1674cc07cf85d05b2d0c4cf6f50cf
+    
 
 RUN ./install_zense_sdk.sh
 RUN rm -rf "${PICOZENSE_PARENT_DIR}"
