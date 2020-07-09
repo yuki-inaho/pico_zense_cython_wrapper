@@ -73,11 +73,22 @@ bool PicoZenseManager::openDevice(int32_t deviceIndex) {
   PsReturnStatus status;
   std::string uri_string = std::string(pDeviceListInfo[deviceIndex_].uri);
   std::cout << "Try to open :" << uri_string << std::endl;
-  status = Ps2_OpenDevice(uri_string.c_str(), &deviceHandle);
-  if (status != PsReturnStatus::PsRetOK) {
-    cout << "PsOpenDevice failed!" << endl;
-    return false;
-  }
+  bool is_opened;
+  do{
+    status = Ps2_OpenDevice(pDeviceListInfo[deviceIndex_].uri, &deviceHandle);
+    if (status != PsReturnStatus::PsRetOK) {
+      if(status == PsRetCameraNotOpened){
+        std::cout << "Waiting for PsCameraOpen acitvation ..." << std::endl;  
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        is_opened = false;
+        continue;
+      }
+      cout << "PsOpenDevice failed! :" << status << endl;  
+      return false;
+    }else{
+      is_opened = true;
+    }
+  }while(!is_opened);
 
   deviceState_ = DeviceOpened;
   return true;
