@@ -50,10 +50,12 @@ void PicoZenseManager::closeDevice() {
   } else {
     std::cout << "Device Closed: " << deviceIndex_ << std::endl;
   }
+  /*
   status = Ps2_Shutdown();
   if (status != PsReturnStatus::PsRetOK) {
     std::cout << "Shutdown failed!" << std::endl;
   }
+  */
   deviceState_ = DeviceClosed;
 }
 
@@ -89,6 +91,34 @@ bool PicoZenseManager::openDevice(int32_t deviceIndex) {
       is_opened = true;
     }
   }while(!is_opened);
+
+  PsDeviceInfo pDevices;
+  status = Ps2_GetDeviceInfo(&pDevices, deviceIndex_);
+  while(pDevices.status != Opened){
+    status = Ps2_CloseDevice(deviceHandle);
+    if (status != PsReturnStatus::PsRetOK) {
+      std::cout << "CloseDevice failed!" << std::endl;
+      return false;
+    }
+
+    status = Ps2_OpenDevice(pDeviceListInfo[deviceIndex_].uri, &deviceHandle);
+    if (status != PsReturnStatus::PsRetOK) {
+      if(status == PsRetCameraNotOpened){
+        std::cout << "PsCameraOpen failed..." << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        is_opened = false;
+      }else{
+        std::cout << "Device open failed" << std::endl;
+        return false;
+      }
+    }
+
+    status = Ps2_GetDeviceInfo(&pDevices, deviceIndex_);
+    if (status != PsReturnStatus::PsRetOK) {
+      std::cout << "GetDeviceInfo failed!" << std::endl;
+      return false;
+    }
+  }
 
   deviceState_ = DeviceOpened;
   return true;
@@ -306,6 +336,22 @@ bool PicoZenseManager::updateDevice() {
   }
 
   return isSuccess;
+}
+
+void PicoZenseManager::getDeviceInfo() {
+  PsReturnStatus status;
+  PsDeviceInfo pDevices;
+  status = Ps2_GetDeviceInfo(&pDevices, deviceIndex_);
+
+  if(pDevices.status == ConnectUNKNOWN){
+    std::cout << "ConnectStatus : " << "ConnectUNKNOWN" << std::endl;
+  }else if(pDevices.status == Unconnected){
+    std::cout << "ConnectStatus : " << "Unconnected" << std::endl;
+  }else if(pDevices.status == Connected){
+    std::cout << "ConnectStatus : " << "Connected" << std::endl;
+  }else if(pDevices.status == Opened){
+    std::cout << "ConnectStatus : " << "Opened" << std::endl;
+  }
 }
 
 CameraParameter PicoZenseManager::setCameraParameter_(
