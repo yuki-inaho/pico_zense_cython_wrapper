@@ -67,6 +67,11 @@ bool PicoZenseManager::openDevice(int32_t deviceIndex) {
     return false;
   }
 
+  /*
+  Ps2_OpenDevice does not always return PsRetOK.
+  And most of these exception case returns PsRetCameraNotOpened.
+  In these case, iterative Ps2_OpenDevice seems effective.
+  */
   PsReturnStatus status;
   std::string uri_string = std::string(pDeviceListInfo[deviceIndex_].uri);
   std::cout << "Try to open :" << uri_string << std::endl;
@@ -87,9 +92,15 @@ bool PicoZenseManager::openDevice(int32_t deviceIndex) {
     }
   }while(!is_opened);
 
+  /*
+  When if Ps2_OpenDevice returns PsRetOK,
+  inner status of device often pDevices.status != Opened (pDevices.status == Connected)
+  In such case, iteratively calling CloseDevice() -> OpenDevice combination
+  empirically effective.
+  */
   PsDeviceInfo pDevices;
   status = Ps2_GetDeviceInfo(&pDevices, deviceIndex_);
-  do {
+  while(pDevices.status != Opened){
     status = Ps2_CloseDevice(deviceHandle);
     status = Ps2_OpenDevice(pDeviceListInfo[deviceIndex_].uri, &deviceHandle);
     if (status != PsReturnStatus::PsRetOK) {
@@ -101,12 +112,13 @@ bool PicoZenseManager::openDevice(int32_t deviceIndex) {
         return false;
       }
     }
+    getDeviceInfo();
     status = Ps2_GetDeviceInfo(&pDevices, deviceIndex_);
     if (status != PsReturnStatus::PsRetOK) {
       std::cout << "GetDeviceInfo failed! :" << status << std::endl;
       return false;
     }
-  }while(pDevices.status != Opened);
+  }
 
   deviceState_ = DeviceOpened;
   return true;
@@ -177,7 +189,7 @@ bool PicoZenseManager::setupDevice(int32_t range1, int32_t range2, bool isRGB) {
   status = Ps2_SetDataMode(deviceHandle, sessionIndex_, (PsDataMode)dataMode);
   if (status != PsReturnStatus::PsRetOK) {
     cout << "PsSetDataMode failed!" << endl;
-    return false;
+    std::exit(EXIT_FAILURE);
   }
 
   // Set depth range
