@@ -43,8 +43,8 @@ PicoZenseManager::PicoZenseManager(int32_t device_idx) {
   status =
       PsGetCameraParameters(device_idx_, PsDepthSensor, &camera_parameters);
 
-  // status = PsSetDataMode(device_idx_, PsDepthAndIR_30);
-  status = PsSetDataMode(device_idx_, PsDepthAndIR_15_RGB_30);
+  status = PsSetDataMode(device_idx_, PsDepthAndIR_30);
+  // status = PsSetDataMode(device_idx_, PsDepthAndIR_15_RGB_30);
   if (status != PsReturnStatus::PsRetOK) {
     cout << "PsSetDataMode failed!" << endl;
     ;
@@ -153,18 +153,9 @@ bool PicoZenseManager::update() {
     isSuccess = true;
   }
 
-  PsFrame rgbFrame = {0};
-  PsGetFrame(device_idx_, PsRGBFrame, &rgbFrame);
-  if (rgbFrame.pFrameData != NULL) {
-    rgbImg_ =
-        cv::Mat(rgbFrame.height, rgbFrame.width, CV_8UC3, rgbFrame.pFrameData);
-    isSuccess = true;
-  }
-
   if (isSuccess) {
     if (depthImg_.rows == 0) isSuccess = false;
     if (irImg_.rows == 0) isSuccess = false;
-    if (rgbImg_.rows == 0) isSuccess = false;
   }
 
   return isSuccess;
@@ -232,7 +223,5 @@ std::string PicoZenseManager::getSerialNumber() { return serialNumber_; }
 cv::Mat PicoZenseManager::getIRImage() { return irImg_; }
 
 cv::Mat PicoZenseManager::getDepthImage() { return depthImg_; }
-
-cv::Mat PicoZenseManager::getRGBImage() { return rgbImg_; }
 
 }  // namespace zense

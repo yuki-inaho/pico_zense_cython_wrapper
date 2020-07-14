@@ -39,7 +39,6 @@ class PicoZenseManager {
   void printCameraParams(CameraParameter cameraParam);
   bool update();
   cv::Mat getIRImage();
-  cv::Mat getRGBImage();
   cv::Mat getDepthImage();
 
   std::string getSerialNumber();

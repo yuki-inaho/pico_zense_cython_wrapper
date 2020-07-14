@@ -77,10 +77,10 @@ cdef class PyPicoZenseManager:
         status = self.thisptr.update()
 
         if status:
-            rgbImg = self.thisptr.getRGBImage()
+            #rgbImg = self.thisptr.getRGBImage()
             irImg = self.thisptr.getIRImage()
             depthImg = self.thisptr.getDepthImage()
-            self.rgbImg_npy = Mat2np(rgbImg)
+            #self.rgbImg_npy = Mat2np(rgbImg)
             self.irImg_npy = Mat2np(irImg)
             self.depthImg_npy = Mat2np(depthImg)
         return status
@@ -98,7 +98,7 @@ cdef class PyPicoZenseManager:
         return self.thisptr.getSerialNumber()
 
     def getRGBImage(self):
-        return self.rgbImg_npy
+        print("Currently, RGB image aquisition is not supported on this module.")
 
     def getIRImage(self):
         return self.irImg_npy
