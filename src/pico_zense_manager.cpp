@@ -290,7 +290,6 @@ bool PicoZenseManager::updateDevice() {
       depthRange_ = depthFrame.depthRange;
       depthImg_ = cv::Mat(depthFrame.height, depthFrame.width, CV_16UC1,
                           depthFrame.pFrameData);
-      irImg_ = depthImg_;
       isSuccess = true;
     }
   } else {
@@ -302,7 +301,6 @@ bool PicoZenseManager::updateDevice() {
         depthRange_ = depthFrame.depthRange;
         depthImg_ = cv::Mat(depthFrame.height, depthFrame.width, CV_16UC1,
                             depthFrame.pFrameData);
-        irImg_ = depthImg_;
         isSuccess = true;
       }
     }
@@ -332,7 +330,8 @@ bool PicoZenseManager::updateDevice() {
 
   if (isSuccess) {
     if (depthImg_.rows == 0) isSuccess = false;
-    if (irImg_.rows == 0) isSuccess = false;
+    if (!isWDR_ && !isRGB_ && irImg_.rows == 0) isSuccess = false;
+    if (isRGB_ && rgbImg_.rows == 0) isSuccess = false;
   }
 
   return isSuccess;

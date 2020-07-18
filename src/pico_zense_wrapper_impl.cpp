@@ -223,16 +223,10 @@ bool PicoZenseWrapperImpl::_update<ZenseMode::DepthIR>() {
 }
 
 bool PicoZenseWrapperImpl::update() {
-  // ToDo: Check coverage
   bool status = false;
-
   while (!status) {
     if (isRGB) {
-      if (isIR) {
-        status = _update<ZenseMode::RGBDIR>();
-      } else {
-        status = _update<ZenseMode::RGBD>();
-      }
+      status = _update<ZenseMode::RGBD>();     
     } else {
       if (isWDR) {
         status = _update<ZenseMode::WDR>();
@@ -241,7 +235,6 @@ bool PicoZenseWrapperImpl::update() {
       }
     }
   }
-
   return status;
 }
 

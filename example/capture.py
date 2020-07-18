@@ -75,18 +75,15 @@ def main():
     while ((key & 0xFF != ord('q')) or (key & 0xFF != 27)):
         status = zense_mng.update()
         if status:
-            ir_img = zense_mng.ir_image
+            rgbimg = zense_mng.rgb_image
             depth_img = zense_mng.depth_image
 
-            ir_img_resized = cv2.resize(ir_img, (IMAGE_WIDTH, IMAGE_HEIGHT))
-
+            rgbimg_resized = cv2.resize(rgbimg, (IMAGE_WIDTH, IMAGE_HEIGHT))
             depth_img_colorized = colorize_depth_img(depth_img, 2000)
-            ir_img_normd = ir_uc8_normalized_img(ir_img_resized, 3840)
 
             frame = np.zeros((IMAGE_HEIGHT*2, IMAGE_WIDTH*2, 3), np.uint8)
-            frame[0:IMAGE_HEIGHT, 0:IMAGE_WIDTH, :] = ir_img_normd
-            frame[0:IMAGE_HEIGHT, IMAGE_WIDTH:IMAGE_WIDTH *
-                  2, :] = depth_img_colorized
+            frame[0:IMAGE_HEIGHT, 0:IMAGE_WIDTH, :] = rgbimg_resized
+            frame[0:IMAGE_HEIGHT, IMAGE_WIDTH:IMAGE_WIDTH * 2, :] = depth_img_colorized
 
             cvui.printf(frame, 50, IMAGE_HEIGHT+50, 0.8, 0x00ff00,
                         "Number of Captured Images : %d", number_of_saved_frame)
@@ -94,7 +91,7 @@ def main():
                 cv2.imwrite(osp.join(DATA_SAVE_DIR, "depth", "%06d.png" %
                                      (number_of_saved_frame)), depth_img)
                 cv2.imwrite(osp.join(DATA_SAVE_DIR, "color",
-                                     "%06d.png" % (number_of_saved_frame)), ir_img)
+                                     "%06d.png" % (number_of_saved_frame)), rgbimg)
                 number_of_saved_frame += 1
 
             if cvui.button(frame, 350, IMAGE_HEIGHT+100, 200, 100,  "Erase Images"):
