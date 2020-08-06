@@ -1,4 +1,16 @@
-# Installation
+# Installation (Docker)
+1. Build docker image
+```
+make build
+```
+
+2. Enter docker container
+```
+make run
+```
+
+
+# Installation (not Docker)
 1. Install PicoZenseSDK from https://www.picozense.com/en/sdk.html
 
 2. Create /usr/lib/pkgconfig/libpicozense.pc:
