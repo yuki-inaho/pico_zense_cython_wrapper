@@ -10,7 +10,7 @@ RUN sed -i -r 's|(archive\|security)\.ubuntu\.com/|ftp.jaist.ac.jp/pub/Linux/|' 
     python-dev python-pip libavcodec-dev libavformat-dev libgtk2.0-dev libv4l-dev &&\
     # SDK dependency
     add-apt-repository ppa:nilarimogard/webupd8 && \
-    apt-get update && apt-get install -y libvdpau-va-gl1 i965-va-driver vdpauinfo && \
+    apt-get update && apt-get install -y libvdpau-va-gl1 i965-va-driver vdpauinfo libvdpau-dev&& \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

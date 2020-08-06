@@ -176,6 +176,7 @@ cdef class PyPicoZenseManager:
                 depthWDRImg = self.thisptr.getWDRDepthImage()
                 if(depthWDRImg[0].cols == 0):
                     return False
+                self.rgbImg_npy = Mat2np(rgbImg)
                 self.depthImgRange1_npy = Mat2np(
                     depthWDRImg[0], is_UC16=True)
                 self.depthImgRange2_npy = Mat2np(

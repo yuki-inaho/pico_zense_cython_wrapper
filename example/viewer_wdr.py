@@ -65,19 +65,19 @@ key = cv2.waitKey(10)
 while ((key & 0xFF != ord('q')) or (key & 0xFF != 27)):
     status = zense_mng.update()
     if status:
+        rgb_img = zense_mng.rgb_image
         depth_img_r1 = zense_mng.depth_image_range1
         depth_img_r2 = zense_mng.depth_image_range2
         depth_img_r1_colorized = colorize_depth_img(depth_img_r1, 2000)
         depth_img_r2_colorized = colorize_depth_img(depth_img_r2, 2000)
 
-        depth_img_r1_resized = cv2.resize(depth_img_r1_colorized,
-                                          (IMAGE_WIDTH, IMAGE_HEIGHT))
-        depth_img_r2_resized = cv2.resize(depth_img_r2_colorized,
-                                          (IMAGE_WIDTH, IMAGE_HEIGHT))
-        frame = np.zeros((IMAGE_HEIGHT, IMAGE_WIDTH * 2, 3), np.uint8)
+        depth_img_r1_resized = cv2.resize(depth_img_r1_colorized,(IMAGE_WIDTH, IMAGE_HEIGHT))
+        depth_img_r2_resized = cv2.resize(depth_img_r2_colorized,(IMAGE_WIDTH, IMAGE_HEIGHT))
+        rgb_img_resized = cv2.resize(rgb_img,(IMAGE_WIDTH, IMAGE_HEIGHT))
+        frame = np.zeros((IMAGE_HEIGHT, IMAGE_WIDTH * 3, 3), np.uint8)
         frame[0:IMAGE_HEIGHT, 0:IMAGE_WIDTH, :] = depth_img_r1_resized
-        frame[0:IMAGE_HEIGHT,
-              IMAGE_WIDTH:IMAGE_WIDTH * 2, :] = depth_img_r2_resized
+        frame[0:IMAGE_HEIGHT, IMAGE_WIDTH:IMAGE_WIDTH * 2, :] = depth_img_r2_resized
+        frame[0:IMAGE_HEIGHT, IMAGE_WIDTH * 2:IMAGE_WIDTH * 3: , :] = rgb_img_resized
 
         cvui.update()
         cv2.imshow(WINDOW_NAME, frame)
