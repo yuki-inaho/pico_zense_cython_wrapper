@@ -33,4 +33,6 @@ RUN git clone https://github.com/Vzense/Vzense_SDK_linux.git && \
 RUN ./install_zense_sdk.sh
 RUN rm -rf "${PICOZENSE_PARENT_DIR}"
 
+RUN pip install ipython
+
 CMD [ /bin/bash ]

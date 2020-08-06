@@ -26,6 +26,7 @@ class PicoZenseWrapperImpl {
   void setup(std::string cfgParamPath, std::string camKey,
              int32_t device_index__);
   void setup(int32_t device_index__);
+  void setup(std::string serial_number);
   bool isWithinError(float val, float ref) {
     int32_t depth_range = manager_.getDepthRange();
     const double fract_err = 1e-5;

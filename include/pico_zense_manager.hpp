@@ -3,6 +3,9 @@
 
 #include "Vzense_api2.h"
 #include "common.hpp"
+#include <experimental/filesystem>
+
+namespace efs = std::experimental::filesystem;
 
 #define MAX_DEVICECOUNT 10
 class PicoZenseManager {
@@ -10,6 +13,7 @@ class PicoZenseManager {
   PicoZenseManager();
 
   bool openDevice(int32_t deviceIndex);
+  bool openDevice(std::string serial_number);
   void closeDevice();
   bool setupDevice(int32_t range1 = PsNearRange,
                    int32_t range2 = PsFarRange, bool isRGB = false);

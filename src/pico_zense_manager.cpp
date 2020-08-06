@@ -124,6 +124,80 @@ bool PicoZenseManager::openDevice(int32_t deviceIndex) {
   return true;
 }
 
+bool PicoZenseManager::openDevice(std::string serial_number) {
+  deviceIndex_ = 0;
+  cout << "Opening device : " << deviceIndex_ << endl;
+  if (!(deviceIndex_ >= 0 && deviceIndex_ < deviceCount_)) {
+    cout << "Device index is out of range!" << endl;
+    return false;
+  }
+
+  if (deviceState_ != DeviceClosed) {
+    cout << "Device is already opened" << endl;
+    return false;
+  }
+
+  /*
+  Ps2_OpenDevice does not always return PsRetOK.
+  And most of these exception case returns PsRetCameraNotOpened.
+  In these case, iterative Ps2_OpenDevice seems effective.
+  */
+  PsReturnStatus status;
+  efs::path uri_abs_path = efs::path(string("/dev/video-DCAM710-") + serial_number);
+  std::string uri_string = efs::canonical(uri_abs_path).string();
+
+  std::cout << "Given serial number :" << serial_number << std::endl;
+  std::cout << "Try to open :" << uri_string << std::endl;
+  bool is_opened;
+  do{
+    status = Ps2_OpenDevice(uri_string.c_str(), &deviceHandle);
+    if (status != PsReturnStatus::PsRetOK) {
+      if(status == PsRetCameraNotOpened){
+        std::cout << "Waiting for sensor acitvation ..." << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        is_opened = false;
+        continue;
+      }
+      cout << "PsOpenDevice failed! :" << status << endl;  
+      return false;
+    }else{
+      is_opened = true;
+    }
+  }while(!is_opened);
+
+  /*
+  When if Ps2_OpenDevice returns PsRetOK,
+  inner status of device often pDevices.status != Opened (pDevices.status == Connected)
+  In such case, iteratively calling CloseDevice() -> OpenDevice combination
+  empirically effective.
+  */
+  PsDeviceInfo pDevices;
+  status = Ps2_GetDeviceInfo(&pDevices, deviceIndex_);
+  while(pDevices.status != Opened){
+    status = Ps2_CloseDevice(deviceHandle);
+    status = Ps2_OpenDevice(pDeviceListInfo[deviceIndex_].uri, &deviceHandle);
+    if (status != PsReturnStatus::PsRetOK) {
+      if(status == PsRetCameraNotOpened){
+        std::cout << "Sensor refreshing ..." << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+      }else{
+        std::cout << "Device open failed" << std::endl;
+        return false;
+      }
+    }
+    getDeviceInfo();
+    status = Ps2_GetDeviceInfo(&pDevices, deviceIndex_);
+    if (status != PsReturnStatus::PsRetOK) {
+      std::cout << "GetDeviceInfo failed! :" << status << std::endl;
+      return false;
+    }
+  }
+
+  deviceState_ = DeviceOpened;
+  return true;
+}
+
+
 bool PicoZenseManager::startDevice() {
   if (deviceState_ != DeviceOpened) {
     cout << "Device is not opened" << endl;

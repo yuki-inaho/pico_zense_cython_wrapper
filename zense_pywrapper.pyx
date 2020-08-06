@@ -13,10 +13,14 @@ import toml
 import base64
 import numpy as np
 cimport numpy as np
+import inspect
+import sys
 
+if not hasattr(sys.modules[__name__], '__file__'):
+    __file__ = inspect.getfile(inspect.currentframe())
 
-include_dir_path = os.path.join(os.path.dirname(
-    os.path.abspath(__file__)), "..", "include"
+include_dir_path = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "..", "include"
 )
 
 ctypedef enum DepthRange:
@@ -89,6 +93,7 @@ cdef extern from "../include/pico_zense_wrapper_impl.hpp" namespace "zense":
         PicoZenseWrapperImpl() except +
         void setup(int32_t device_index_)
         void setup(string cfgParamPath, string camKey, int32_t device_index_)
+        void setup(string serial_number)
         void close()
         bool update()
         bool is_rgb()
@@ -120,10 +125,12 @@ cdef class PyPicoZenseManager:
     cdef object depthImgRange1_npy
     cdef object depthImgRange2_npy
 
-    def __cinit__(self, int32_t device_index_, string cfgParamPath='', string camKey=''):
+    def __cinit__(self, int32_t device_index_=0, string cfgParamPath='', string camKey='', string serial_number=''):
         self.thisptr = new PicoZenseWrapperImpl()
         if (len(cfgParamPath) > 0) and (len(camKey) > 0):
             self.thisptr.setup(cfgParamPath, camKey, device_index_)
+        elif(len(serial_number) > 0):
+            self.thisptr.setup(serial_number)
         else:
             self.thisptr.setup(device_index_)
 

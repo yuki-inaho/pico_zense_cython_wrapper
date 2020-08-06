@@ -63,7 +63,7 @@ setup(
                           "src/parameter_manager.cpp",
                       ],
                       extra_compile_args=[
-                          "-std=gnu++11",
+                          "-std=gnu++14",
                           "-O3",
                           zense_cflags,
                           zense_libs
@@ -74,7 +74,7 @@ setup(
                           cvlib_include_folder
                       ],
                       library_dirs=lib_dirs,
-                      libraries=cvlibs + ["vzense_api", "ImgPreProcess"],
+                      libraries=cvlibs + ["vzense_api", "ImgPreProcess", "stdc++fs"],
                       language="c++",
                       )
         ]

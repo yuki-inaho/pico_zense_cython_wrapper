@@ -114,6 +114,40 @@ void PicoZenseWrapperImpl::setup(int32_t device_index__) {
   std::cout << "Camera setup is finished!" << std::endl;
 }
 
+void PicoZenseWrapperImpl::setup(std::string serial_number) {
+  device_index_ = 0;
+  usleep(5 * 1e6);  // To avoid high frequent sensor open call from
+                    // immediately after termination and rebooting
+  range1 = 0;
+  range2 = -1;
+  isRGB = true;
+  isWDR = (range1 >= 0) && (range2 >= 0);
+  isIR = isRGB && !isWDR;
+
+  manager_.openDevice(serial_number);
+  if (!manager_.startDevice()) {
+    close();
+    std::cerr << "Could not start device" << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
+  if (!manager_.setupDevice(range1, range2, isRGB)) {
+    close();
+    std::cerr << "Could not setup device" << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
+  if (range2 < 0) range2 = range1;
+
+  std::string camera_name = "Camera0";
+  serial_no_ = manager_.getSerialNumber();
+
+  //TODO: rewrite RGB flag expricitly
+  camera_param_ = manager_.getCameraParameter(PsDepthSensor);
+  camera_param_rgb_ = manager_.getCameraParameter(PsRgbSensor);
+  extrinsic_param_ = manager_.getExtrinsicParameter();
+
+
+  std::cout << "Camera setup is finished!" << std::endl;
+}
 
 
 void PicoZenseWrapperImpl::close() { manager_.closeDevice(); }
