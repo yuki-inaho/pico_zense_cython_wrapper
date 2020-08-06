@@ -52,12 +52,11 @@ def main(out):
         print("generated")
 
     try:
-        zense.close()        
+        zense.close()
         del zense
     except:
         print("move")
         pass
-    
 
 
 if __name__ == "__main__":

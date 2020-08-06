@@ -242,8 +242,11 @@ bool PicoZenseManager::setupDevice(int32_t range1, int32_t range2, bool isRGB) {
   // RGB resolution
   Ps2_SetRGBResolution(deviceHandle, sessionIndex_, PsRGB_Resolution_1920_1080);
   Ps2_SetColorPixelFormat(deviceHandle, sessionIndex_, PsPixelFormatBGR888);
-  if (!isRGB) {
+  if (!isRGB_ && !isWDR_) {
     Ps2_SetRgbFrameEnabled(deviceHandle, sessionIndex_, false);
+  }else{
+    Ps2_SetRgbFrameEnabled(deviceHandle, sessionIndex_, true);
+    std::cout << "set" << std::endl;
   }
 
   status = Ps2_SetMapperEnabledRGBToDepth(deviceHandle, sessionIndex_, false);
@@ -292,6 +295,16 @@ bool PicoZenseManager::updateDevice() {
                           depthFrame.pFrameData);
       isSuccess = true;
     }
+
+    if (1 == frameReady.rgb) {
+      PsFrame rgbFrame = {0};
+      Ps2_GetFrame(deviceHandle, sessionIndex_, PsRGBFrame, &rgbFrame);
+      if (rgbFrame.pFrameData != NULL) {
+        rgbImg_ = cv::Mat(rgbFrame.height, rgbFrame.width, CV_8UC3,
+                          rgbFrame.pFrameData);
+      }
+    }
+
   } else {
     // Depth
     if (1 == frameReady.depth) {
@@ -317,7 +330,7 @@ bool PicoZenseManager::updateDevice() {
 
     // RGB
     if (1 == frameReady.rgb) {
-      if (isRGB_) {
+      if (isRGB_ || isWDR_) {
         PsFrame rgbFrame = {0};
         Ps2_GetFrame(deviceHandle, sessionIndex_, PsRGBFrame, &rgbFrame);
         if (rgbFrame.pFrameData != NULL) {

@@ -175,6 +175,7 @@ bool PicoZenseWrapperImpl::_update<ZenseMode::WDR>() {
   if (!monitoring_skip()) return false;
   DepthRange _depth_range = (DepthRange)manager_.getDepthRange();
   cv::Mat _depth_image = manager_.getDepthImage().clone();
+  rgb_image = manager_.getRgbImage().clone();
   if (_depth_range == range1) {
     depth_range1 = _depth_range;
     depth_image_range1 = _depth_image;
@@ -226,7 +227,7 @@ bool PicoZenseWrapperImpl::update() {
   bool status = false;
   while (!status) {
     if (isRGB) {
-      status = _update<ZenseMode::RGBD>();     
+      status = _update<ZenseMode::RGBD>();
     } else {
       if (isWDR) {
         status = _update<ZenseMode::WDR>();

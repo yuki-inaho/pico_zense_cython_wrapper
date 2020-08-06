@@ -170,6 +170,9 @@ cdef class PyPicoZenseManager:
         else:
             if self.thisptr.is_wdr():
                 # WDR case
+                rgbImg = self.thisptr.getRGBImage()
+                if(rgbImg.cols == 0):
+                    return False
                 depthWDRImg = self.thisptr.getWDRDepthImage()
                 if(depthWDRImg[0].cols == 0):
                     return False

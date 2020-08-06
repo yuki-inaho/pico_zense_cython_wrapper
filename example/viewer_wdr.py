@@ -58,14 +58,13 @@ is_wdr_enabled()
 zense_mng = PyPicoZenseManager(0, CFG_PARAM_PATH, "Camera0")
 cvui.init(WINDOW_NAME)
 
-zense_mng.set_laser_intensity(500)
+zense_mng.set_pulse_count_WDR(160, 400)
 #status = zense_mng.update_laser_intensity()
 
 key = cv2.waitKey(10)
 while ((key & 0xFF != ord('q')) or (key & 0xFF != 27)):
     status = zense_mng.update()
     if status:
-        print(zense_mng.get_pulse_count)
         depth_img_r1 = zense_mng.depth_image_range1
         depth_img_r2 = zense_mng.depth_image_range2
         depth_img_r1_colorized = colorize_depth_img(depth_img_r1, 2000)
