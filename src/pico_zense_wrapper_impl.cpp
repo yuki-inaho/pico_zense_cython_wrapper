@@ -110,11 +110,83 @@ void PicoZenseWrapperImpl::setup(int32_t device_index__) {
   camera_param_rgb_ = manager_.getCameraParameter(PsRgbSensor);
   extrinsic_param_ = manager_.getExtrinsicParameter();
 
-
   std::cout << "Camera setup is finished!" << std::endl;
 }
 
+bool PicoZenseWrapperImpl::setDeviceMode(const int32_t & range1_to_set, const int32_t &range2_to_set, const int32_t &rgb_setting){
+  bool isRGB_tmp;
+  if(rgb_setting == 1){
+    isRGB_tmp = true;
+  }else{
+    isRGB_tmp = false;
+  }
 
+  std::cerr << "Try to change Device Mode:" << range1 << "," << range2 << "," << isRGB << std::endl;
+  if (!manager_.setupDevice(range1, range2, isRGB_tmp)) {
+    std::cerr << "Changing Device Mode is failed" << std::endl;
+  }
+
+  range1 = range1_to_set;
+  range2 = range2_to_set;
+  isRGB = isRGB_tmp;
+  isWDR = (range1 >= 0) && (range2 >= 0);
+  isIR = isRGB && !isWDR;
+
+  usleep(5 * 1e6);
+  return true;
+}
+
+bool PicoZenseWrapperImpl::setDeviceModeFromConfig(std::string cfgParamPath, std::string camKey){
+  if (!checkFileExistence(cfgParamPath)) {
+    std::cerr << "Setting TOML file does not exist" << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
+
+  ParameterManager cfgParam(cfgParamPath);
+  sensor_id_ = cfgParam.readStringData("General", "sensor_id");
+  if (!cfgParam.checkExistanceTable(camKey.c_str())) {
+    std::cerr << "Camera name is invalid, please check setting toml file" << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
+
+  std::string camera_name = cfgParam.readStringData(camKey.c_str(), "camera_name");
+  std::string serial_no_from_toml = cfgParam.readStringData(camKey.c_str(), "serial_no");
+  range1 = cfgParam.readIntData(camKey.c_str(), "range1");
+  range2 = cfgParam.readIntData(camKey.c_str(), "range2");
+  int32_t rgb_setting = cfgParam.readIntData(camKey.c_str(), "rgb_image");
+  if(serial_no_ != serial_no_from_toml){
+    std::cerr << "Serial number information of setting file is not corresponding to actual sensor information" << std::endl;
+    close();
+  }
+
+  std::string camFactKey = camKey + "_Factory";
+  CameraParameter camera_factory_param;
+  camera_factory_param.fx = cfgParam.readFloatData(camFactKey.c_str(), "fx");
+  camera_factory_param.fy = cfgParam.readFloatData(camFactKey.c_str(), "fy");
+  camera_factory_param.cx = cfgParam.readFloatData(camFactKey.c_str(), "cx");
+  camera_factory_param.cy = cfgParam.readFloatData(camFactKey.c_str(), "cy");
+  camera_factory_param.p1 = cfgParam.readFloatData(camFactKey.c_str(), "p1");
+  camera_factory_param.p2 = cfgParam.readFloatData(camFactKey.c_str(), "p2");
+  camera_factory_param.k1 = cfgParam.readFloatData(camFactKey.c_str(), "k1");
+  camera_factory_param.k2 = cfgParam.readFloatData(camFactKey.c_str(), "k2");
+  camera_factory_param.k3 = cfgParam.readFloatData(camFactKey.c_str(), "k3");
+  camera_factory_param.k4 = cfgParam.readFloatData(camFactKey.c_str(), "k4");
+  camera_factory_param.k5 = cfgParam.readFloatData(camFactKey.c_str(), "k5");
+  camera_factory_param.k6 = cfgParam.readFloatData(camFactKey.c_str(), "k6");
+
+  std::string id_str;
+  setDeviceMode(range1, range2, rgb_setting);
+  if (range2 < 0) range2 = range1;
+
+  camera_param_ = manager_.getCameraParameter(PsDepthSensor);
+  if (!(isWithinError(camera_param_.k5, camera_factory_param.k5) &&
+        isWithinError(camera_param_.k6, camera_factory_param.k6))) {
+    close();
+    std::cerr << "Erroneous internal parameters. Exiting..." << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
+  std::cout << "Camera setup is finished!" << std::endl;
+}
 
 void PicoZenseWrapperImpl::close() { manager_.closeDevice(); }
 

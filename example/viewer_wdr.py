@@ -55,7 +55,9 @@ def colorize_depth_img(img, max_var):
 #
 
 is_wdr_enabled()
-zense_mng = PyPicoZenseManager(0, CFG_PARAM_PATH, "Camera0")
+zense_mng = PyPicoZenseManager(0)
+zense_mng.set_device_mode_from_config(CFG_PARAM_PATH, "Camera0")
+
 cvui.init(WINDOW_NAME)
 
 zense_mng.set_pulse_count_WDR(160, 400)

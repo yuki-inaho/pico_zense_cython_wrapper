@@ -108,7 +108,8 @@ cdef extern from "../include/pico_zense_wrapper_impl.hpp" namespace "zense":
         bool setPulseCount(uint32_t pulseCount)
         bool getPulseCountWDR(uint32_t &pulse_count_range1, uint32_t &pulse_count_range2)
         bool setPulseCountWDR(uint32_t pulse_count_range1, uint32_t pulse_count_range2)
-
+        bool setDeviceMode(int32_t range1, int32_t range2, int32_t rgb_setting)
+        bool setDeviceModeFromConfig(string cfgParamPath, string camKey)
         bool setDepthRange(string given_range)
 
 
@@ -292,6 +293,12 @@ cdef class PyPicoZenseManager:
 
     def set_depth_range(self, given_range):
         return self.thisptr.setDepthRange(given_range)
+
+    def set_device_mode(self, range1 : int32_t, range2 : int32_t, rgb_setting : int32_t):
+        return self.thisptr.setDeviceMode(range1, range2, rgb_setting)
+
+    def set_device_mode_from_config(self, string cfgParamPath='', string camKey=''):
+        return self.thisptr.setDeviceModeFromConfig(cfgParamPath, camKey)
 
     @property
     def get_depth_range(self):

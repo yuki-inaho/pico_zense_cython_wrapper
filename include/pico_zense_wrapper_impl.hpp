@@ -31,6 +31,8 @@ class PicoZenseWrapperImpl {
     const double fract_err = 1e-5;
     return (std::fabs(val - ref) <= fract_err * std::fabs(ref));
   };
+  bool setDeviceMode(const int32_t & range1_to_set, const int32_t &range2_to_set, const int32_t &rgb_setting);
+  bool setDeviceModeFromConfig(std::string cfgParamPath, std::string camKey);
   void close();
   bool update();
 
