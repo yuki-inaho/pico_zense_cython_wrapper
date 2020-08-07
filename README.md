@@ -10,7 +10,7 @@ make run
 ```
 
 
-# Installation (not Docker)
+# Installation (not Docker, deprecated)
 1. Install PicoZenseSDK from https://www.picozense.com/en/sdk.html
 
 2. Create /usr/lib/pkgconfig/libpicozense.pc:

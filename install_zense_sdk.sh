@@ -1,8 +1,9 @@
 #!/bin/bash -e
 
-mv /app/$PICOZENSE_LIB $PICOZENSE_INSTALL_DIR
-chown -R root:root $PICOZENSE_INSTALL_DIR
-cd $PICOZENSE_INSTALL_DIR
+mv "/app/${PICOZENSE_LIB}" "${PICOZENSE_INSTALL_DIR}"
+chown -R root:root "${PICOZENSE_INSTALL_DIR}"
+rm -rf "${PICOZENSE_PARENT_DIR}"
+cd "${PICOZENSE_INSTALL_DIR}"
 
 ./install.sh
 
