@@ -88,6 +88,7 @@ cdef extern from "../include/pico_zense_wrapper_impl.hpp" namespace "zense":
     cdef cppclass PicoZenseWrapperImpl:
         PicoZenseWrapperImpl() except +
         void setup(int32_t device_index_)
+        void setup(string uri_string)
         void setup(string cfgParamPath, string camKey, int32_t device_index_)
         void close()
         bool update()
@@ -121,11 +122,15 @@ cdef class PyPicoZenseManager:
     cdef object depthImgRange1_npy
     cdef object depthImgRange2_npy
 
-    def __cinit__(self, int32_t device_index_, string cfgParamPath='', string camKey=''):
+    def __cinit__(self, int32_t device_index_, string cfgParamPath='', string camKey='', string uri_string=''):
         self.thisptr = new PicoZenseWrapperImpl()
         if (len(cfgParamPath) > 0) and (len(camKey) > 0):
             self.thisptr.setup(cfgParamPath, camKey, device_index_)
+        elif device_index_ < 0 and len(uri_string) > 0:
+            self.thisptr.setup(uri_string)
         else:
+            if device_index_ < 0:
+                device_index_ = 0
             self.thisptr.setup(device_index_)
 
     def __dealloc__(self):

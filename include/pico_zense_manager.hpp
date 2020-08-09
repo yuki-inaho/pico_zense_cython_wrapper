@@ -10,6 +10,7 @@ class PicoZenseManager {
   PicoZenseManager();
 
   bool openDevice(int32_t deviceIndex);
+  bool openDevice(std::string uri_string);
   void closeDevice();
   bool setupDevice(int32_t range1 = PsNearRange,
                    int32_t range2 = PsFarRange, bool isRGB = false);
