@@ -94,6 +94,7 @@ cdef extern from "../include/pico_zense_wrapper_impl.hpp" namespace "zense":
         bool update()
         bool is_rgb()
         bool is_ir()
+        bool is_rgbir()
         bool is_wdr()
         string getSerialNumber()
         vector[double] getCameraParameter()
@@ -154,15 +155,26 @@ cdef class PyPicoZenseManager:
 
         if self.thisptr.is_rgb():
             if self.thisptr.is_ir():
-                # RGBDIR case
-                rgbImg = self.thisptr.getRGBImage()
-                if(rgbImg.cols == 0):
-                    return False
-                self.rgbImg_npy = Mat2np(rgbImg)
-                irImg = self.thisptr.getIRImage()
-                self.irImg_npy = Mat2np(irImg, is_UC16=True)
-                depthImg = self.thisptr.getDepthImage()
-                self.depthImgRange1_npy = Mat2np(depthImg, is_UC16=True)
+                # RGBIR case
+                if self.thisptr.is_rgbir():
+                    rgbImg = self.thisptr.getRGBImage()
+                    self.rgbImg_npy = Mat2np(rgbImg)
+                    if(rgbImg.cols == 0):
+                        return False
+                    irImg = self.thisptr.getIRImage()
+                    if(irImg.cols == 0):
+                        return False
+                    self.irImg_npy = Mat2np(irImg, is_UC16=True)
+                else:
+                    # RGBDIR case
+                    rgbImg = self.thisptr.getRGBImage()
+                    if(rgbImg.cols == 0):
+                        return False
+                    self.rgbImg_npy = Mat2np(rgbImg)
+                    irImg = self.thisptr.getIRImage()
+                    self.irImg_npy = Mat2np(irImg, is_UC16=True)
+                    depthImg = self.thisptr.getDepthImage()
+                    self.depthImgRange1_npy = Mat2np(depthImg, is_UC16=True)
 
             else:
                 # RGBD case

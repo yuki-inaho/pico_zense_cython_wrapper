@@ -59,6 +59,7 @@ class PicoZenseManager {
   std::string serialNumber_;
   bool isWDR_;
   bool isRGB_;
+  bool isRGBIR_;
 
   int32_t depthRange_;
   cv::Mat depthImg_;

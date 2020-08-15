@@ -8,6 +8,7 @@ PicoZenseManager::PicoZenseManager() {
     serialNumber_ = "";
     isWDR_ = false;
     isRGB_ = false;
+    isRGBIR_ = false;
   }
 
   PsReturnStatus status;
@@ -80,12 +81,12 @@ bool PicoZenseManager::openDevice(int32_t deviceIndex) {
     status = Ps2_OpenDevice(pDeviceListInfo[deviceIndex_].uri, &deviceHandle);
     if (status != PsReturnStatus::PsRetOK) {
       if(status == PsRetCameraNotOpened){
-        std::cout << "Waiting for sensor acitvation ..." << std::endl;  
+        std::cout << "Waiting for sensor acitvation ..." << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(1));
         is_opened = false;
         continue;
       }
-      cout << "PsOpenDevice failed! :" << status << endl;  
+      cout << "PsOpenDevice failed! :" << status << endl;
       return false;
     }else{
       is_opened = true;
@@ -149,12 +150,12 @@ bool PicoZenseManager::openDevice(std::string uri_string) {
     status = Ps2_OpenDevice(uri_string.c_str(), &deviceHandle);
     if (status != PsReturnStatus::PsRetOK) {
       if(status == PsRetCameraNotOpened){
-        std::cout << "Waiting for sensor acitvation ..." << std::endl;  
+        std::cout << "Waiting for sensor acitvation ..." << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(1));
         is_opened = false;
         continue;
       }
-      cout << "PsOpenDevice failed! :" << status << endl;  
+      cout << "PsOpenDevice failed! :" << status << endl;
       return false;
     }else{
       is_opened = true;
@@ -245,12 +246,15 @@ bool PicoZenseManager::setupDevice(int32_t range1, int32_t range2, bool isRGB) {
 
   // Operating Mode
   int32_t dataMode;
-  isWDR_ = !(range2 < PsNearRange);
+  isWDR_ = !(range2 < PsNearRange) && range1 >= 0;
   isRGB_ = isRGB;
+  isRGBIR_ = range1 < 0 && isRGB;
   if (isWDR_) {
     dataMode = PsWDR_Depth;
-  } else if (isRGB_) {
+  } else if (isRGB_ && !isRGBIR_) {
     dataMode = PsDepthAndRGB_30;
+  } else if (isRGBIR_) {
+    dataMode = PsIRAndRGB_30;
   } else {
     dataMode = PsDepthAndIR_30;
   }
@@ -289,13 +293,15 @@ bool PicoZenseManager::setupDevice(int32_t range1, int32_t range2, bool isRGB) {
     std::cout << "WDR mode : " << strRange[range1] << "-" << strRange[range2]
               << std::endl;
   } else {
-    status =
-        Ps2_SetDepthRange(deviceHandle, sessionIndex_, (PsDepthRange)range1);
-    if (status != PsReturnStatus::PsRetOK) {
-      std::cout << "PsSetDepthRange failed!" << std::endl;
-      return false;
+    if(!isRGBIR_){
+      status =
+          Ps2_SetDepthRange(deviceHandle, sessionIndex_, (PsDepthRange)range1);
+      if (status != PsReturnStatus::PsRetOK) {
+        std::cout << "PsSetDepthRange failed!" << std::endl;
+        return false;
+      }
+      std::cout << "Single range mode : " << strRange[range1] << std::endl;
     }
-    std::cout << "Single range mode : " << strRange[range1] << std::endl;
   }
 
   // Distortion
@@ -315,7 +321,9 @@ bool PicoZenseManager::setupDevice(int32_t range1, int32_t range2, bool isRGB) {
     Ps2_SetRgbFrameEnabled(deviceHandle, sessionIndex_, false);
   }else{
     Ps2_SetRgbFrameEnabled(deviceHandle, sessionIndex_, true);
-    std::cout << "set" << std::endl;
+    if(isRGBIR_){
+      Ps2_SetIrFrameEnabled(deviceHandle, sessionIndex_, true);
+    }
   }
 
   status = Ps2_SetMapperEnabledRGBToDepth(deviceHandle, sessionIndex_, false);
@@ -394,6 +402,7 @@ bool PicoZenseManager::updateDevice() {
       if (irFrame.pFrameData != NULL) {
         irImg_ = cv::Mat(irFrame.height, irFrame.width, CV_16UC1,
                          irFrame.pFrameData);
+        if(isRGBIR_) isSuccess = true;
       }
     }
 
@@ -411,11 +420,11 @@ bool PicoZenseManager::updateDevice() {
   }
 
   if (isSuccess) {
-    if (depthImg_.rows == 0) isSuccess = false;
-    if (!isWDR_ && !isRGB_ && irImg_.rows == 0) isSuccess = false;
-    if (isRGB_ && rgbImg_.rows == 0) isSuccess = false;
+    if (!isRGBIR_ && depthImg_.rows == 0) isSuccess = false;
+    if (!isWDR_ && !isRGB_ && irImg_.rows == 0) isSuccess = false; // Depth & IR
+    if (isRGBIR_ && irImg_.rows == 0) isSuccess = false; // RGB & IR
+    if (isRGB_ && rgbImg_.rows == 0) isSuccess = false; // RGB & Depth
   }
-
   return isSuccess;
 }
 

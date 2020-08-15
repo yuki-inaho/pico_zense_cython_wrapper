@@ -17,7 +17,7 @@ enum DepthRange { Near, Mid, Far };
 typedef std::vector<DepthRange> WDRDepthRange;
 
 // not_WDR is just convenience notification for getDepthRange()
-enum ZenseMode { RGBD, RGBDIR, DepthIR, WDR };
+enum ZenseMode { RGBD, RGBDIR, RGBIR, DepthIR, WDR }; // Currently RGBDIR mode is disable by manufacture
 
 class PicoZenseWrapperImpl {
  public:
@@ -70,6 +70,7 @@ class PicoZenseWrapperImpl {
   bool is_rgb() { return isRGB; };
   bool is_ir() { return isIR; };
   bool is_wdr() { return isWDR; };
+  bool is_rgbir() { return isRGBIR; };
 
  private:
   // PicoZense custom API
@@ -85,7 +86,7 @@ class PicoZenseWrapperImpl {
   int32_t device_index_;
   std::string sensor_id_;
   std::string serial_no_;
-  bool isRGB, isWDR, isIR;
+  bool isRGB, isWDR, isIR, isRGBIR;
 
   cv::Mat rgb_image;
   cv::Mat ir_image;

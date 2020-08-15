@@ -30,6 +30,7 @@ void PicoZenseWrapperImpl::setup(std::string cfgParamPath, std::string camKey,
   isRGB = cfgParam.readIntData(camKey.c_str(), "rgb_image") == 1;
   isWDR = (range1 >= 0) && (range2 >= 0);
   isIR = isRGB && !isWDR;
+  isRGBIR = isRGB && range1 < 0;
   // TODO: merge factory values and tuned values
   std::string camFactKey = camKey + "_Factory";
 
@@ -88,6 +89,7 @@ void PicoZenseWrapperImpl::setup(int32_t device_index__) {
   isRGB = true;
   isWDR = (range1 >= 0) && (range2 >= 0);
   isIR = isRGB && !isWDR;
+  isRGBIR = false;
 
   manager_.openDevice(device_index_);
   if (!manager_.startDevice()) {
@@ -155,7 +157,7 @@ bool PicoZenseWrapperImpl::setDeviceMode(const int32_t & range1_to_set, const in
     isRGB_tmp = false;
   }
 
-  std::cerr << "Try to change Device Mode:" << range1 << "," << range2 << "," << isRGB << std::endl;
+  std::cerr << "Try to change Device Mode:" << range1 << "," << range2 << "," << rgb_setting << std::endl;
   if (!manager_.setupDevice(range1, range2, isRGB_tmp)) {
     std::cerr << "Changing Device Mode is failed" << std::endl;
   }
@@ -165,6 +167,7 @@ bool PicoZenseWrapperImpl::setDeviceMode(const int32_t & range1_to_set, const in
   isRGB = isRGB_tmp;
   isWDR = (range1 >= 0) && (range2 >= 0);
   isIR = isRGB && !isWDR;
+  isRGBIR = isRGB && range1 < 0;
 
   usleep(5 * 1e6);
   return true;
@@ -231,8 +234,10 @@ std::vector<int> PicoZenseWrapperImpl::getDepthRangeWDR() {
 }
 
 bool PicoZenseWrapperImpl::monitoring_skip() {
-  skip_counter_[range1]++;
-  skip_counter_[range2]++;
+  if(!isRGBIR){
+    skip_counter_[range1]++;
+    skip_counter_[range2]++;
+  }
   if (skip_counter_[range1] > MAX_SKIP_COUNTER ||
       skip_counter_[range2] > MAX_SKIP_COUNTER) {
     close();
@@ -246,6 +251,16 @@ bool PicoZenseWrapperImpl::monitoring_skip() {
     return false;
   }
   return true;
+}
+
+template <>
+bool PicoZenseWrapperImpl::_update<ZenseMode::RGBIR>() {
+  bool is_success = true;
+  if (!monitoring_skip()) return false;
+  rgb_image = manager_.getRgbImage().clone();
+  ir_image = manager_.getIRImage().clone();
+  if (rgb_image.cols == 0 || ir_image.cols == 0) is_success = false;
+  return is_success;
 }
 
 template <>
@@ -333,7 +348,11 @@ bool PicoZenseWrapperImpl::update() {
   bool status = false;
   while (!status) {
     if (isRGB) {
-      status = _update<ZenseMode::RGBD>();
+      if(isRGBIR){
+        status = _update<ZenseMode::RGBIR>();
+      }else{
+        status = _update<ZenseMode::RGBD>();
+      }
     } else {
       if (isWDR) {
         status = _update<ZenseMode::WDR>();
