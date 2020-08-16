@@ -81,7 +81,8 @@ def main():
             rgbd_img = rgb_img.copy()
             nonzero_idx = np.where(depth_image_d2c > 0)
             rgbd_img[nonzero_idx[0], nonzero_idx[1], :] = depth_image_d2c_colorized[nonzero_idx[0], nonzero_idx[1], :]
-            cv2.imshow(WINDOW_NAME, rgbd_img)
+            rgbd_img_resized = cv2.resize(rgbd_img, (1280, 720))
+            cv2.imshow(WINDOW_NAME, rgbd_img_resized)
             key = cv2.waitKey(20)
             if key == 27:
                 break
