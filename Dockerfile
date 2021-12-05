@@ -30,6 +30,8 @@ RUN curl -L "https://github.com/Vzense/Vzense_SDK_Linux/archive/${VZENSE_COMMIT_
     tar -zx "Vzense_SDK_Linux-${VZENSE_COMMIT_ID}/Ubuntu18.04" && \
     mv "Vzense_SDK_Linux-${VZENSE_COMMIT_ID}" "${PICOZENSE_PARENT_DIR}"
 
+RUN pip install -U pip
+RUN pip install pyrsistent==0.16.1
 RUN ./install_zense_sdk.sh
 RUN rm -rf "${PICOZENSE_PARENT_DIR}"
 
