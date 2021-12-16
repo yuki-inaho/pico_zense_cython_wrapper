@@ -54,7 +54,7 @@ setup(
                           cvlib_include_folder
                       ],
                       library_dirs=lib_dirs,
-                      libraries=cvlibs + ["vzense_api", "ImgPreProcess", "vdpau", "X11"],
+                      libraries=cvlibs + ["vzense_api", "ImgPreProcess"],
                       language="c++",
                       )
         ]

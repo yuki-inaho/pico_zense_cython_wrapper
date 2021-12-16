@@ -1,4 +1,4 @@
-click==7.1.2
+click
 cvui==2.7b1
 cython==0.29.19
 numpy==1.16.6
