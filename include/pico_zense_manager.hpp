@@ -5,8 +5,9 @@
 #include "common.hpp"
 
 #define MAX_DEVICECOUNT 10
-class PicoZenseManager {
- public:
+class PicoZenseManager
+{
+public:
   PicoZenseManager();
 
   bool openDevice(int32_t deviceIndex);
@@ -15,27 +16,36 @@ class PicoZenseManager {
   bool setupDevice(int32_t range1 = PsNearRange,
                    int32_t range2 = PsFarRange, bool isRGB = false);
   bool startDevice();
+  bool enableExternalTriggerMode();
+  bool disableExternalTriggerMode();
   bool updateDevice();
   void getDeviceInfo();
-  std::string getSerialNumber() {
+  std::string getSerialNumber()
+  {
     return serialNumber_;
   }
 
-  int32_t getDepthRange() {
+  int32_t getDepthRange()
+  {
     return depthRange_;
   }
   cv::Mat getDepthImage() { return depthImg_; }
   cv::Mat getIRImage() { return irImg_; }
   cv::Mat getRgbImage() { return rgbImg_; }
 
-  CameraParameter getCameraParameter(int32_t sensor_type) {
-    if (sensor_type == PsDepthSensor) {
+  CameraParameter getCameraParameter(int32_t sensor_type)
+  {
+    if (sensor_type == PsDepthSensor)
+    {
       return camera_param_depth_;
-    } else {
+    }
+    else
+    {
       return camera_param_rgb_;
     }
   }
-  ExtrinsicParameter getExtrinsicParameter(){
+  ExtrinsicParameter getExtrinsicParameter()
+  {
     return extrinsic_param_;
   }
 
@@ -48,8 +58,8 @@ class PicoZenseManager {
   bool isWDR() { return isWDR_; }
   bool isRGB() { return isRGB_; }
 
- private:
-  PsDeviceInfo* pDeviceListInfo;
+private:
+  PsDeviceInfo *pDeviceListInfo;
   PsDeviceHandle deviceHandle;
   uint32_t deviceCount_;
   uint32_t deviceIndex_;

@@ -113,7 +113,8 @@ cdef extern from "../include/pico_zense_wrapper_impl.hpp" namespace "zense":
         bool setDeviceMode(int32_t range1, int32_t range2, int32_t rgb_setting)
         bool setDeviceModeFromConfig(string cfgParamPath, string camKey)
         bool setDepthRange(string given_range)
-
+        bool enableExternalTriggerMode()
+        bool disableExternalTriggerMode()
 
 cdef class PyPicoZenseManager:
     cdef PicoZenseWrapperImpl * thisptr
@@ -316,6 +317,12 @@ cdef class PyPicoZenseManager:
 
     def set_device_mode_from_config(self, string cfgParamPath='', string camKey=''):
         return self.thisptr.setDeviceModeFromConfig(cfgParamPath, camKey)
+
+    def enable_external_trigger(self):
+        self.thisptr.enableExternalTriggerMode()
+
+    def disable_external_trigger(self):
+        self.thisptr.disableExternalTriggerMode()
 
     @property
     def get_depth_range(self):

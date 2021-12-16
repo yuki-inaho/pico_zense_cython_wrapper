@@ -9,9 +9,9 @@ import shutil
 import glob
 from collections import deque
 
-NAMESPACE = 'merge_near_far'
-NEAR = 'depth_near'
-FAR = 'depth_far'
+NAMESPACE = "merge_near_far"
+NEAR = "depth_near"
+FAR = "depth_far"
 DEPTH_SHAPE = (480, 640)
 DEPTH_SIZE = DEPTH_SHAPE[0] * DEPTH_SHAPE[1]
 
@@ -52,12 +52,11 @@ class MergeDepthImage(object):
         n_filled = (depth_stk > 0).sum(axis=0)
         median_idx_in_sorted = -(n_filled / 2) + (self.merge_queue_size - 1)
         median_idx = sort_idx.reshape(self.merge_queue_size, -1)[
-            median_idx_in_sorted.reshape(-1).astype(np.uint64),
-            np.arange(DEPTH_SIZE)
+            median_idx_in_sorted.reshape(-1).astype(np.uint64), np.arange(DEPTH_SIZE)
         ]
-        depth_median = (depth_stk.reshape(self.merge_queue_size, -1)[
-            median_idx, np.arange(DEPTH_SIZE)
-        ]).reshape(DEPTH_SHAPE)
+        depth_median = (depth_stk.reshape(self.merge_queue_size, -1)[median_idx, np.arange(DEPTH_SIZE)]).reshape(
+            DEPTH_SHAPE
+        )
         return depth_median
 
     def update(self, depth_image):
@@ -94,16 +93,15 @@ class WDRImageMerger(object):
         n_filled = (depth_stk > 0).sum(axis=0)
         median_idx_in_sorted = -(n_filled / 2) + (self.merge_queue_size - 1)
         median_idx = sort_idx.reshape(self.merge_queue_size, -1)[
-            median_idx_in_sorted.reshape(-1).astype(np.uint64),
-            np.arange(DEPTH_SIZE)
+            median_idx_in_sorted.reshape(-1).astype(np.uint64), np.arange(DEPTH_SIZE)
         ]
-        depth_median = (depth_stk.reshape(self.merge_queue_size, -1)[
-            median_idx, np.arange(DEPTH_SIZE)
-        ]).reshape(DEPTH_SHAPE)
+        depth_median = (depth_stk.reshape(self.merge_queue_size, -1)[median_idx, np.arange(DEPTH_SIZE)]).reshape(
+            DEPTH_SHAPE
+        )
         return depth_median
 
     def get_merged(self, range1_img, range2_img):
-        bflg_range1_empty = (range1_img == 0)
+        bflg_range1_empty = range1_img == 0
         depth_merged_median = range1_img.copy()
         depth_merged_median[bflg_range1_empty] = range2_img[bflg_range1_empty]
         return depth_merged_median
@@ -130,8 +128,7 @@ class WDRImageMerger(object):
 
 def is_wdr_enabled(camera_name, cfg_path):
     toml_dict = toml.load(open(cfg_path))
-    isWDR = int(toml_dict[camera_name]["range1"]) >= 0 and \
-        int(toml_dict[camera_name]["range2"]) >= 0
+    isWDR = int(toml_dict[camera_name]["range1"]) >= 0 and int(toml_dict[camera_name]["range2"]) >= 0
     isRGB = int(toml_dict[camera_name]["rgb_image"]) == 1
     do_exit = False
     if not isWDR:
@@ -151,12 +148,11 @@ def colorize_depth(img, max_var=2000):
     img_hue = img.copy().astype(np.float32)
     img_hue[np.where(img_hue > max_var)] = 0
     zero_idx = np.where((img_hue > max_var) | (img_hue == 0))
-    img_hue *= 255.0/max_var
+    img_hue *= 255.0 / max_var
     img_colorized[:, :, 0] = img_hue.astype(np.uint8)
     img_colorized = cv2.cvtColor(img_colorized, cv2.COLOR_HSV2RGB)
     img_colorized[zero_idx[0], zero_idx[1], :] = 0
     return img_colorized
-
 
 
 def open_dualzense(toml_path):
@@ -167,7 +163,7 @@ def open_dualzense(toml_path):
     serial_number_list = [_mng.serial_number for _mng in zense_manager_list]
     left_zense_index = serial_number_list.index(left_zense_sn)
     right_zense_index = serial_number_list.index(right_zense_sn)
-    
+
     zense_mng_left = zense_manager_list[left_zense_index]
     zense_mng_left.set_device_mode_from_config(toml_path, "Camera0")
     zense_mng_right = zense_manager_list[right_zense_index]
@@ -204,6 +200,9 @@ def main(toml_path, save_dir):
     is_wdr_enabled("Camera1", toml_path)
 
     zense_mng_left, zense_mng_right = open_dualzense(toml_path)
+    zense_mng_left.enable_external_trigger()
+    zense_mng_right.enable_external_trigger()
+
     l_range1, l_range2 = get_wdr_depth_range(toml_path, "Camera0")
     r_range1, r_range2 = get_wdr_depth_range(toml_path, "Camera1")
 
@@ -220,8 +219,8 @@ def main(toml_path, save_dir):
         frame[:] = (49, 52, 49)
         status = zense_mng_left.update()
         status &= zense_mng_right.update()
-        cvui.text(frame, 650, 10, 'Zense Left', 0.5)
-        cvui.text(frame, 1130, 10, 'Zense Right', 0.5)
+        cvui.text(frame, 650, 10, "Zense Left", 0.5)
+        cvui.text(frame, 1130, 10, "Zense Right", 0.5)
         if status:
             depth_img_l1 = zense_mng_left.depth_image_range1.copy()
             depth_img_l2 = zense_mng_left.depth_image_range2.copy()
@@ -247,7 +246,7 @@ def main(toml_path, save_dir):
 
         if key == 27:
             break
-        if key == ord('q'):
+        if key == ord("q"):
             break
         cvui.update()
         cvui.imshow(WINDOW_NAME, frame)

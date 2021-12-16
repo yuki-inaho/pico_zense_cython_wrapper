@@ -418,19 +418,27 @@ bool PicoZenseManager::setupDevice(int32_t range1, int32_t range2, bool isRGB)
   camera_param_rgb_ = setCameraParameter_(PsRgbSensor);
   extrinsic_param_ = setExtrinsicParameter_();
 
-  /*
-    @WARNING: Just a temporary dealing
-  */
-  /*
-  status = Ps2_SetSlaveModeEnabled(deviceHandle, sessionIndex_, true);
+  return true;
+}
+
+bool PicoZenseManager::enableExternalTriggerMode()
+{
+  PsReturnStatus status = Ps2_SetSlaveModeEnabled(deviceHandle, sessionIndex_, true);
   if (status != PsRetOK)
   {
     std::cout << "Ps2_SetSlaveModeEnabled failed!" << std::endl;
     return false;
   }
-  */
+}
 
-  return true;
+bool PicoZenseManager::disableExternalTriggerMode()
+{
+  PsReturnStatus status = Ps2_SetSlaveModeEnabled(deviceHandle, sessionIndex_, false);
+  if (status != PsRetOK)
+  {
+    std::cout << "Ps2_SetSlaveModeEnabled failed!" << std::endl;
+    return false;
+  }
 }
 
 bool PicoZenseManager::updateDevice()

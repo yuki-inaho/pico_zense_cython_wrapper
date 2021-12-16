@@ -22,8 +22,7 @@ CFG_PARAM_PATH = os.path.join(SCRIPT_DIR, "../cfg/camera_parameter.toml")
 def is_wdr_enabled():
     cfg_path = CFG_PARAM_PATH
     toml_dict = toml.load(open(cfg_path))
-    isWDR = int(toml_dict["Camera0"]["range1"]) >= 0 and \
-        int(toml_dict["Camera0"]["range2"]) >= 0
+    isWDR = int(toml_dict["Camera0"]["range1"]) >= 0 and int(toml_dict["Camera0"]["range2"]) >= 0
     isRGB = int(toml_dict["Camera0"]["rgb_image"]) == 1
     do_exit = False
     if not isWDR:
@@ -43,7 +42,7 @@ def colorize_depth_img(img, max_var):
     img_hue = img.copy().astype(np.float32)
     img_hue[np.where(img_hue > max_var)] = 0
     zero_idx = np.where((img_hue > max_var) | (img_hue == 0))
-    img_hue *= 255.0/max_var
+    img_hue *= 255.0 / max_var
     img_colorized[:, :, 0] = img_hue.astype(np.uint8)
     img_colorized = cv2.cvtColor(img_colorized, cv2.COLOR_HSV2RGB)
     img_colorized[zero_idx[0], zero_idx[1], :] = 0
@@ -57,14 +56,15 @@ def colorize_depth_img(img, max_var):
 is_wdr_enabled()
 zense_mng = PyPicoZenseManager(0)
 zense_mng.set_device_mode_from_config(CFG_PARAM_PATH, "Camera0")
+zense_mng.disable_external_trigger()
 
 cvui.init(WINDOW_NAME)
 
 zense_mng.set_pulse_count_WDR(160, 400)
-#status = zense_mng.update_laser_intensity()
+# status = zense_mng.update_laser_intensity()
 
 key = cv2.waitKey(10)
-while ((key & 0xFF != ord('q')) or (key & 0xFF != 27)):
+while (key & 0xFF != ord("q")) or (key & 0xFF != 27):
     status = zense_mng.update()
     if status:
         rgb_img = zense_mng.rgb_image
@@ -73,13 +73,13 @@ while ((key & 0xFF != ord('q')) or (key & 0xFF != 27)):
         depth_img_r1_colorized = colorize_depth_img(depth_img_r1, 2000)
         depth_img_r2_colorized = colorize_depth_img(depth_img_r2, 2000)
 
-        depth_img_r1_resized = cv2.resize(depth_img_r1_colorized,(IMAGE_WIDTH, IMAGE_HEIGHT))
-        depth_img_r2_resized = cv2.resize(depth_img_r2_colorized,(IMAGE_WIDTH, IMAGE_HEIGHT))
-        rgb_img_resized = cv2.resize(rgb_img,(IMAGE_WIDTH, IMAGE_HEIGHT))
+        depth_img_r1_resized = cv2.resize(depth_img_r1_colorized, (IMAGE_WIDTH, IMAGE_HEIGHT))
+        depth_img_r2_resized = cv2.resize(depth_img_r2_colorized, (IMAGE_WIDTH, IMAGE_HEIGHT))
+        rgb_img_resized = cv2.resize(rgb_img, (IMAGE_WIDTH, IMAGE_HEIGHT))
         frame = np.zeros((IMAGE_HEIGHT, IMAGE_WIDTH * 3, 3), np.uint8)
         frame[0:IMAGE_HEIGHT, 0:IMAGE_WIDTH, :] = depth_img_r1_resized
-        frame[0:IMAGE_HEIGHT, IMAGE_WIDTH:IMAGE_WIDTH * 2, :] = depth_img_r2_resized
-        frame[0:IMAGE_HEIGHT, IMAGE_WIDTH * 2:IMAGE_WIDTH * 3: , :] = rgb_img_resized
+        frame[0:IMAGE_HEIGHT, IMAGE_WIDTH : IMAGE_WIDTH * 2, :] = depth_img_r2_resized
+        frame[0:IMAGE_HEIGHT, IMAGE_WIDTH * 2 : IMAGE_WIDTH * 3 :, :] = rgb_img_resized
 
         cvui.update()
         cv2.imshow(WINDOW_NAME, frame)
