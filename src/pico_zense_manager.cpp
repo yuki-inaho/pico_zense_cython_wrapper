@@ -2,8 +2,10 @@
 
 using namespace std;
 
-PicoZenseManager::PicoZenseManager() {
-  for (int deviceIndex__ = 0; deviceIndex__ < MAX_DEVICECOUNT; deviceIndex__++) {
+PicoZenseManager::PicoZenseManager()
+{
+  for (int deviceIndex__ = 0; deviceIndex__ < MAX_DEVICECOUNT; deviceIndex__++)
+  {
     deviceState_ = DeviceClosed;
     serialNumber_ = "";
     isWDR_ = false;
@@ -15,23 +17,27 @@ PicoZenseManager::PicoZenseManager() {
 GET:
   deviceCount_ = 0;
   status = Ps2_GetDeviceCount(&deviceCount_);
-  if (status != PsReturnStatus::PsRetOK) {
+  if (status != PsReturnStatus::PsRetOK)
+  {
     std::cout << "PsGetDeviceCount failed!" << std::endl;
     exit(EXIT_FAILURE);
   }
-  if (0 == deviceCount_) {
+  if (0 == deviceCount_)
+  {
     std::cout << "Waiting for device connection ..." << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(1));
     goto GET;
   }
   pDeviceListInfo = new PsDeviceInfo[deviceCount_];
   status = Ps2_GetDeviceListInfo(pDeviceListInfo, deviceCount_);
-  if (status != PsReturnStatus::PsRetOK) {
+  if (status != PsReturnStatus::PsRetOK)
+  {
     std::cout << "PsGetDeviceCount failed!" << std::endl;
     exit(EXIT_FAILURE);
   }
   std::cout << "Detected " << deviceCount_ << " devices." << std::endl;
-  if (deviceCount_ > MAX_DEVICECOUNT) {
+  if (deviceCount_ > MAX_DEVICECOUNT)
+  {
     std::cout << "# of devices exceeds maximum of " << MAX_DEVICECOUNT
               << std::endl;
     deviceCount_ = MAX_DEVICECOUNT;
@@ -40,30 +46,38 @@ GET:
   sessionIndex_ = 0;
 }
 
-void PicoZenseManager::closeDevice() {
-  if (deviceState_ == DeviceClosed) return;
+void PicoZenseManager::closeDevice()
+{
+  if (deviceState_ == DeviceClosed)
+    return;
 
   PsReturnStatus status;
   status = Ps2_StopStream(deviceHandle, sessionIndex_);
-  status = Ps2_CloseDevice(deviceHandle);
-  if (status != PsReturnStatus::PsRetOK) {
+  status = Ps2_CloseDevice(&deviceHandle);
+  if (status != PsReturnStatus::PsRetOK)
+  {
     std::cout << "CloseDevice failed!" << std::endl;
-  } else {
+  }
+  else
+  {
     std::cout << "Device Closed: " << deviceIndex_ << std::endl;
   }
 
   deviceState_ = DeviceClosed;
 }
 
-bool PicoZenseManager::openDevice(int32_t deviceIndex) {
+bool PicoZenseManager::openDevice(int32_t deviceIndex)
+{
   deviceIndex_ = (uint32_t)deviceIndex;
   cout << "Opening device : " << deviceIndex_ << endl;
-  if (!(deviceIndex_ >= 0 && deviceIndex_ < deviceCount_)) {
+  if (!(deviceIndex_ >= 0 && deviceIndex_ < deviceCount_))
+  {
     cout << "Device index is out of range!" << endl;
     return false;
   }
 
-  if (deviceState_ != DeviceClosed) {
+  if (deviceState_ != DeviceClosed)
+  {
     cout << "Device is already opened" << endl;
     return false;
   }
@@ -77,10 +91,13 @@ bool PicoZenseManager::openDevice(int32_t deviceIndex) {
   std::string uri_string = std::string(pDeviceListInfo[deviceIndex_].uri);
   std::cout << "Try to open :" << uri_string << std::endl;
   bool is_opened;
-  do{
+  do
+  {
     status = Ps2_OpenDevice(pDeviceListInfo[deviceIndex_].uri, &deviceHandle);
-    if (status != PsReturnStatus::PsRetOK) {
-      if(status == PsRetCameraNotOpened){
+    if (status != PsReturnStatus::PsRetOK)
+    {
+      if (status == PsRetCameraNotOpened)
+      {
         std::cout << "Waiting for sensor acitvation ..." << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(1));
         is_opened = false;
@@ -88,10 +105,12 @@ bool PicoZenseManager::openDevice(int32_t deviceIndex) {
       }
       cout << "PsOpenDevice failed! :" << status << endl;
       return false;
-    }else{
+    }
+    else
+    {
       is_opened = true;
     }
-  }while(!is_opened);
+  } while (!is_opened);
 
   /*
   When if Ps2_OpenDevice returns PsRetOK,
@@ -101,21 +120,27 @@ bool PicoZenseManager::openDevice(int32_t deviceIndex) {
   */
   PsDeviceInfo pDevices;
   status = Ps2_GetDeviceInfo(&pDevices, deviceIndex_);
-  while(pDevices.status != Opened){
-    status = Ps2_CloseDevice(deviceHandle);
+  while (pDevices.status != Opened)
+  {
+    status = Ps2_CloseDevice(&deviceHandle);
     status = Ps2_OpenDevice(pDeviceListInfo[deviceIndex_].uri, &deviceHandle);
-    if (status != PsReturnStatus::PsRetOK) {
-      if(status == PsRetCameraNotOpened){
+    if (status != PsReturnStatus::PsRetOK)
+    {
+      if (status == PsRetCameraNotOpened)
+      {
         std::cout << "Sensor refreshing ..." << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(1));
-      }else{
+      }
+      else
+      {
         std::cout << "Device open failed" << std::endl;
         return false;
       }
     }
     getDeviceInfo();
     status = Ps2_GetDeviceInfo(&pDevices, deviceIndex_);
-    if (status != PsReturnStatus::PsRetOK) {
+    if (status != PsReturnStatus::PsRetOK)
+    {
       std::cout << "GetDeviceInfo failed! :" << status << std::endl;
       return false;
     }
@@ -125,15 +150,18 @@ bool PicoZenseManager::openDevice(int32_t deviceIndex) {
   return true;
 }
 
-bool PicoZenseManager::openDevice(std::string uri_string) {
+bool PicoZenseManager::openDevice(std::string uri_string)
+{
   deviceIndex_ = 0;
   cout << "Opening device : " << deviceIndex_ << endl;
-  if (!(deviceIndex_ >= 0 && deviceIndex_ < deviceCount_)) {
+  if (!(deviceIndex_ >= 0 && deviceIndex_ < deviceCount_))
+  {
     cout << "Device index is out of range!" << endl;
     return false;
   }
 
-  if (deviceState_ != DeviceClosed) {
+  if (deviceState_ != DeviceClosed)
+  {
     cout << "Device is already opened" << endl;
     return false;
   }
@@ -146,10 +174,13 @@ bool PicoZenseManager::openDevice(std::string uri_string) {
   PsReturnStatus status;
   std::cout << "Try to open :" << uri_string << std::endl;
   bool is_opened;
-  do{
+  do
+  {
     status = Ps2_OpenDevice(uri_string.c_str(), &deviceHandle);
-    if (status != PsReturnStatus::PsRetOK) {
-      if(status == PsRetCameraNotOpened){
+    if (status != PsReturnStatus::PsRetOK)
+    {
+      if (status == PsRetCameraNotOpened)
+      {
         std::cout << "Waiting for sensor acitvation ..." << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(1));
         is_opened = false;
@@ -157,10 +188,12 @@ bool PicoZenseManager::openDevice(std::string uri_string) {
       }
       cout << "PsOpenDevice failed! :" << status << endl;
       return false;
-    }else{
+    }
+    else
+    {
       is_opened = true;
     }
-  }while(!is_opened);
+  } while (!is_opened);
 
   /*
   When if Ps2_OpenDevice returns PsRetOK,
@@ -170,21 +203,27 @@ bool PicoZenseManager::openDevice(std::string uri_string) {
   */
   PsDeviceInfo pDevices;
   status = Ps2_GetDeviceInfo(&pDevices, deviceIndex_);
-  while(pDevices.status != Opened){
-    status = Ps2_CloseDevice(deviceHandle);
+  while (pDevices.status != Opened)
+  {
+    status = Ps2_CloseDevice(&deviceHandle);
     status = Ps2_OpenDevice(pDeviceListInfo[deviceIndex_].uri, &deviceHandle);
-    if (status != PsReturnStatus::PsRetOK) {
-      if(status == PsRetCameraNotOpened){
+    if (status != PsReturnStatus::PsRetOK)
+    {
+      if (status == PsRetCameraNotOpened)
+      {
         std::cout << "Sensor refreshing ..." << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(1));
-      }else{
+      }
+      else
+      {
         std::cout << "Device open failed" << std::endl;
         return false;
       }
     }
     getDeviceInfo();
     status = Ps2_GetDeviceInfo(&pDevices, deviceIndex_);
-    if (status != PsReturnStatus::PsRetOK) {
+    if (status != PsReturnStatus::PsRetOK)
+    {
       std::cout << "GetDeviceInfo failed! :" << status << std::endl;
       return false;
     }
@@ -194,12 +233,15 @@ bool PicoZenseManager::openDevice(std::string uri_string) {
   return true;
 }
 
-bool PicoZenseManager::startDevice() {
-  if (deviceState_ != DeviceOpened) {
+bool PicoZenseManager::startDevice()
+{
+  if (deviceState_ != DeviceOpened)
+  {
     cout << "Device is not opened" << endl;
     return false;
   }
-  if (deviceState_ == DeviceStarted) {
+  if (deviceState_ == DeviceStarted)
+  {
     cout << "Device is already started" << endl;
     return false;
   }
@@ -234,14 +276,17 @@ bool PicoZenseManager::startDevice() {
   return true;
 }
 
-bool PicoZenseManager::setupDevice(int32_t range1, int32_t range2, bool isRGB) {
+bool PicoZenseManager::setupDevice(int32_t range1, int32_t range2, bool isRGB)
+{
   cout << "Setting up device : " << deviceIndex_ << endl;
-  if (!(deviceIndex_ >= 0 && deviceIndex_ < deviceCount_)) {
+  if (!(deviceIndex_ >= 0 && deviceIndex_ < deviceCount_))
+  {
     cout << "Device index is out of range!" << endl;
     return false;
   }
 
-  if (deviceState_ == DeviceClosed) return false;
+  if (deviceState_ == DeviceClosed)
+    return false;
   PsReturnStatus status;
 
   // Operating Mode
@@ -249,20 +294,21 @@ bool PicoZenseManager::setupDevice(int32_t range1, int32_t range2, bool isRGB) {
   isWDR_ = !(range2 < PsNearRange) && range1 >= 0;
   isRGB_ = isRGB;
   isRGBIR_ = range1 < 0 && isRGB;
-  if (isWDR_) {
+  if (isWDR_)
+  {
     dataMode = PsWDR_Depth;
-  } else if (isRGB_ && !isRGBIR_) {
-    dataMode = PsDepthAndRGB_30;
-  } else if (isRGBIR_) {
-    dataMode = PsIRAndRGB_30;
-  } else {
-    dataMode = PsDepthAndIR_30;
   }
-
-  status = Ps2_SetDataMode(deviceHandle, sessionIndex_, (PsDataMode)dataMode);
-  if (status != PsReturnStatus::PsRetOK) {
-    cout << "PsSetDataMode failed!" << endl;
-    std::exit(EXIT_FAILURE);
+  else if (isRGB_ && !isRGBIR_)
+  {
+    dataMode = PsDepthAndRGB_30;
+  }
+  else if (isRGBIR_)
+  {
+    dataMode = PsIRAndRGB_30;
+  }
+  else
+  {
+    dataMode = PsDepthAndIR_30;
   }
 
   // Set depth range
@@ -271,7 +317,8 @@ bool PicoZenseManager::setupDevice(int32_t range1, int32_t range2, bool isRGB) {
   strRange[PsMidRange] = "mid";
   strRange[PsFarRange] = "far";
 
-  if (isWDR_) {
+  if (isWDR_)
+  {
     PsWDROutputMode modeWDR = {PsWDRTotalRange_Two,
                                (PsDepthRange)range1,
                                1,
@@ -280,28 +327,51 @@ bool PicoZenseManager::setupDevice(int32_t range1, int32_t range2, bool isRGB) {
                                PsNearRange,
                                1};
     status = Ps2_SetWDROutputMode(deviceHandle, sessionIndex_, &modeWDR);
-    if (status != PsReturnStatus::PsRetOK) {
+    if (status != PsReturnStatus::PsRetOK)
+    {
       std::cout << "PsSetWDROutputMode failed!" << std::endl;
       return false;
     }
 
+    status = Ps2_SetDataMode(deviceHandle, sessionIndex_, (PsDataMode)dataMode);
+    if (status != PsReturnStatus::PsRetOK)
+    {
+      cout << "PsSetDataMode failed!" << endl;
+      std::exit(EXIT_FAILURE);
+    }
+
     status = Ps2_SetWDRStyle(deviceHandle, sessionIndex_, PsWDR_ALTERNATION);
-    if (status != PsReturnStatus::PsRetOK) {
+    if (status != PsReturnStatus::PsRetOK)
+    {
       std::cout << "PsSetWDRStyle failed!" << std::endl;
       return false;
     }
     std::cout << "WDR mode : " << strRange[range1] << "-" << strRange[range2]
               << std::endl;
-  } else {
-    if(!isRGBIR_){
+  }
+  else
+  {
+    if (!isRGBIR_)
+    {
+      status = Ps2_SetDataMode(deviceHandle, sessionIndex_, (PsDataMode)dataMode);
+      if (status != PsReturnStatus::PsRetOK)
+      {
+        cout << "PsSetDataMode failed!" << endl;
+        std::exit(EXIT_FAILURE);
+      }
+
       status =
           Ps2_SetDepthRange(deviceHandle, sessionIndex_, (PsDepthRange)range1);
-      if (status != PsReturnStatus::PsRetOK) {
+      if (status != PsReturnStatus::PsRetOK)
+      {
         std::cout << "PsSetDepthRange failed!" << std::endl;
         return false;
       }
       std::cout << "Single range mode : " << strRange[range1] << std::endl;
     }
+    /*
+    TODO: confirm if-else condition coverage
+    */
   }
 
   // Distortion
@@ -317,23 +387,29 @@ bool PicoZenseManager::setupDevice(int32_t range1, int32_t range2, bool isRGB) {
   // RGB resolution
   Ps2_SetRGBResolution(deviceHandle, sessionIndex_, PsRGB_Resolution_1920_1080);
   Ps2_SetColorPixelFormat(deviceHandle, sessionIndex_, PsPixelFormatBGR888);
-  if (!isRGB_ && !isWDR_) {
+  if (!isRGB_ && !isWDR_)
+  {
     Ps2_SetRgbFrameEnabled(deviceHandle, sessionIndex_, false);
-  }else{
+  }
+  else
+  {
     Ps2_SetRgbFrameEnabled(deviceHandle, sessionIndex_, true);
-    if(isRGBIR_){
+    if (isRGBIR_)
+    {
       Ps2_SetIrFrameEnabled(deviceHandle, sessionIndex_, true);
     }
   }
 
   status = Ps2_SetMapperEnabledRGBToDepth(deviceHandle, sessionIndex_, false);
-  if (status != PsRetOK) {
+  if (status != PsRetOK)
+  {
     std::cout << "PsSetMapperEnabledRGBToDepth failed!" << std::endl;
     return false;
   }
 
   status = Ps2_SetMapperEnabledDepthToRGB(deviceHandle, sessionIndex_, false);
-  if (status != PsRetOK) {
+  if (status != PsRetOK)
+  {
     std::cout << "PsSetMapperEnabledDepthToRGB failed!" << std::endl;
     return false;
   }
@@ -342,52 +418,74 @@ bool PicoZenseManager::setupDevice(int32_t range1, int32_t range2, bool isRGB) {
   camera_param_rgb_ = setCameraParameter_(PsRgbSensor);
   extrinsic_param_ = setExtrinsicParameter_();
 
+  /*
+    @WARNING: Just a temporary dealing
+  */
+  /*
+  status = Ps2_SetSlaveModeEnabled(deviceHandle, sessionIndex_, true);
+  if (status != PsRetOK)
+  {
+    std::cout << "Ps2_SetSlaveModeEnabled failed!" << std::endl;
+    return false;
+  }
+  */
+
   return true;
 }
 
-bool PicoZenseManager::updateDevice() {
+bool PicoZenseManager::updateDevice()
+{
   bool isSuccess = false;
   PsReturnStatus status;
 
-  if (deviceState_ != DeviceStarted) {
+  if (deviceState_ != DeviceStarted)
+  {
     cout << "Device " << deviceIndex_ << " has not started!" << endl;
     return isSuccess;
   }
 
   PsFrameReady frameReady = {0};
   status = Ps2_ReadNextFrame(deviceHandle, sessionIndex_, &frameReady);
-  if (status != PsRetOK) {
+  if (status != PsRetOK)
+  {
     std::cout << "Could not read next frame from device "
               << (uint32_t)deviceIndex_ << std::endl;
     return isSuccess;
   }
 
-  if (isWDR_ && (1 == frameReady.wdrDepth)) {
+  if (isWDR_ && (1 == frameReady.wdrDepth))
+  {
     // WDR Depth
     PsFrame depthFrame = {0};
     Ps2_GetFrame(deviceHandle, sessionIndex_, PsWDRDepthFrame, &depthFrame);
-    if (depthFrame.pFrameData != NULL) {
+    if (depthFrame.pFrameData != NULL)
+    {
       depthRange_ = depthFrame.depthRange;
       depthImg_ = cv::Mat(depthFrame.height, depthFrame.width, CV_16UC1,
                           depthFrame.pFrameData);
       isSuccess = true;
     }
 
-    if (1 == frameReady.rgb) {
+    if (1 == frameReady.rgb)
+    {
       PsFrame rgbFrame = {0};
       Ps2_GetFrame(deviceHandle, sessionIndex_, PsRGBFrame, &rgbFrame);
-      if (rgbFrame.pFrameData != NULL) {
+      if (rgbFrame.pFrameData != NULL)
+      {
         rgbImg_ = cv::Mat(rgbFrame.height, rgbFrame.width, CV_8UC3,
                           rgbFrame.pFrameData);
       }
     }
-
-  } else {
+  }
+  else
+  {
     // Depth
-    if (1 == frameReady.depth) {
+    if (1 == frameReady.depth)
+    {
       PsFrame depthFrame = {0};
       Ps2_GetFrame(deviceHandle, sessionIndex_, PsDepthFrame, &depthFrame);
-      if (depthFrame.pFrameData != NULL) {
+      if (depthFrame.pFrameData != NULL)
+      {
         depthRange_ = depthFrame.depthRange;
         depthImg_ = cv::Mat(depthFrame.height, depthFrame.width, CV_16UC1,
                             depthFrame.pFrameData);
@@ -396,22 +494,28 @@ bool PicoZenseManager::updateDevice() {
     }
 
     // IR
-    if (1 == frameReady.ir) {
+    if (1 == frameReady.ir)
+    {
       PsFrame irFrame = {0};
       Ps2_GetFrame(deviceHandle, sessionIndex_, PsIRFrame, &irFrame);
-      if (irFrame.pFrameData != NULL) {
+      if (irFrame.pFrameData != NULL)
+      {
         irImg_ = cv::Mat(irFrame.height, irFrame.width, CV_16UC1,
                          irFrame.pFrameData);
-        if(isRGBIR_) isSuccess = true;
+        if (isRGBIR_)
+          isSuccess = true;
       }
     }
 
     // RGB
-    if (1 == frameReady.rgb) {
-      if (isRGB_ || isWDR_) {
+    if (1 == frameReady.rgb)
+    {
+      if (isRGB_ || isWDR_)
+      {
         PsFrame rgbFrame = {0};
         Ps2_GetFrame(deviceHandle, sessionIndex_, PsRGBFrame, &rgbFrame);
-        if (rgbFrame.pFrameData != NULL) {
+        if (rgbFrame.pFrameData != NULL)
+        {
           rgbImg_ = cv::Mat(rgbFrame.height, rgbFrame.width, CV_8UC3,
                             rgbFrame.pFrameData);
         }
@@ -419,35 +523,53 @@ bool PicoZenseManager::updateDevice() {
     }
   }
 
-  if (isSuccess) {
-    if (!isRGBIR_ && depthImg_.rows == 0) isSuccess = false;
-    if (!isWDR_ && !isRGB_ && irImg_.rows == 0) isSuccess = false; // Depth & IR
-    if (isRGBIR_ && irImg_.rows == 0) isSuccess = false; // RGB & IR
-    if (isRGB_ && rgbImg_.rows == 0) isSuccess = false; // RGB & Depth
+  if (isSuccess)
+  {
+    if (!isRGBIR_ && depthImg_.rows == 0)
+      isSuccess = false;
+    if (!isWDR_ && !isRGB_ && irImg_.rows == 0)
+      isSuccess = false; // Depth & IR
+    if (isRGBIR_ && irImg_.rows == 0)
+      isSuccess = false; // RGB & IR
+    if (isRGB_ && rgbImg_.rows == 0)
+      isSuccess = false; // RGB & Depth
   }
   return isSuccess;
 }
 
-void PicoZenseManager::getDeviceInfo() {
+void PicoZenseManager::getDeviceInfo()
+{
   PsReturnStatus status;
   PsDeviceInfo pDevices;
   status = Ps2_GetDeviceInfo(&pDevices, deviceIndex_);
   std::cout << "FW_VER : " << pDevices.fw << std::endl;
   std::cout << std::endl;
 
-  if(pDevices.status == ConnectUNKNOWN){
-    std::cout << "ConnectStatus : " << "ConnectUNKNOWN" << std::endl;
-  }else if(pDevices.status == Unconnected){
-    std::cout << "ConnectStatus : " << "Unconnected" << std::endl;
-  }else if(pDevices.status == Connected){
-    std::cout << "ConnectStatus : " << "Connected" << std::endl;
-  }else if(pDevices.status == Opened){
-    std::cout << "ConnectStatus : " << "Opened" << std::endl;
+  if (pDevices.status == ConnectUNKNOWN)
+  {
+    std::cout << "ConnectStatus : "
+              << "ConnectUNKNOWN" << std::endl;
+  }
+  else if (pDevices.status == Unconnected)
+  {
+    std::cout << "ConnectStatus : "
+              << "Unconnected" << std::endl;
+  }
+  else if (pDevices.status == Connected)
+  {
+    std::cout << "ConnectStatus : "
+              << "Connected" << std::endl;
+  }
+  else if (pDevices.status == Opened)
+  {
+    std::cout << "ConnectStatus : "
+              << "Opened" << std::endl;
   }
 }
 
 CameraParameter PicoZenseManager::setCameraParameter_(
-    PsSensorType sensor_type) {
+    PsSensorType sensor_type)
+{
   PsReturnStatus status;
   PsCameraParameters cameraParameters;
 
@@ -471,9 +593,12 @@ CameraParameter PicoZenseManager::setCameraParameter_(
   cameraParam.k5 = cameraParameters.k5;
   cameraParam.k6 = cameraParameters.k6;
 
-  if (sensor_type == PsDepthSensor) {
+  if (sensor_type == PsDepthSensor)
+  {
     sensor_type_str = "Depth camera";
-  } else {
+  }
+  else
+  {
     sensor_type_str = "RGB camera";
   }
 
@@ -485,12 +610,14 @@ CameraParameter PicoZenseManager::setCameraParameter_(
   return cameraParam;
 }
 
-ExtrinsicParameter PicoZenseManager::setExtrinsicParameter_() {
+ExtrinsicParameter PicoZenseManager::setExtrinsicParameter_()
+{
   PsReturnStatus status;
   PsCameraExtrinsicParameters pCameraExtrinsicParameters;
   status = Ps2_GetCameraExtrinsicParameters(deviceHandle, sessionIndex_,
                                             &pCameraExtrinsicParameters);
-  if (status != PsReturnStatus::PsRetOK) {
+  if (status != PsReturnStatus::PsRetOK)
+  {
     std::cout << "Ps2_GetCameraExtrinsicParameters failed!" << std::endl;
     std::exit(EXIT_FAILURE);
   }
@@ -498,29 +625,32 @@ ExtrinsicParameter PicoZenseManager::setExtrinsicParameter_() {
                                 std::end(pCameraExtrinsicParameters.rotation));
   std::vector<double> _translation(
       std::begin(pCameraExtrinsicParameters.translation),
-      std::end(pCameraExtrinsicParameters.translation)
-  );
+      std::end(pCameraExtrinsicParameters.translation));
   extrinsic_param_.rotation = _rotation;
   extrinsic_param_.translation = _translation;
   return extrinsic_param_;
 }
 
-bool PicoZenseManager::setPulseCount(uint32_t pulse_count) {
+bool PicoZenseManager::setPulseCount(uint32_t pulse_count)
+{
   PsReturnStatus status;
   uint16_t _p_pulse_count = static_cast<uint16_t>(pulse_count);
   status = Ps2_SetPulseCount(deviceHandle, sessionIndex_, _p_pulse_count);
-  if (status != PsReturnStatus::PsRetOK) {
+  if (status != PsReturnStatus::PsRetOK)
+  {
     std::cerr << "PsSetPulseCount failed!" << std::endl;
     return false;
   }
   return true;
 }
 
-bool PicoZenseManager::getPulseCount(uint32_t &pulse_count) {
+bool PicoZenseManager::getPulseCount(uint32_t &pulse_count)
+{
   PsReturnStatus status;
   uint16_t _p_pulse_count;
   status = Ps2_GetPulseCount(deviceHandle, sessionIndex_, &_p_pulse_count);
-  if (status != PsReturnStatus::PsRetOK) {
+  if (status != PsReturnStatus::PsRetOK)
+  {
     std::cerr << "PsGetPulseCount failed!" << std::endl;
     return false;
   }
@@ -529,13 +659,15 @@ bool PicoZenseManager::getPulseCount(uint32_t &pulse_count) {
 }
 
 bool PicoZenseManager::setPulseCountWDR(uint32_t pulse_count_range1,
-                                        uint32_t pulse_count_range2) {
+                                        uint32_t pulse_count_range2)
+{
   PsReturnStatus status;
   PsWDRPulseCount wdrPulseCount;
   wdrPulseCount.pulseCount1 = static_cast<uint16_t>(pulse_count_range1);
   wdrPulseCount.pulseCount2 = static_cast<uint16_t>(pulse_count_range2);
   status = Ps2_SetWDRPulseCount(deviceHandle, sessionIndex_, wdrPulseCount);
-  if (status != PsReturnStatus::PsRetOK) {
+  if (status != PsReturnStatus::PsRetOK)
+  {
     std::cerr << "PsSetWDRPulseCount failed!" << std::endl;
     return false;
   }
@@ -543,11 +675,13 @@ bool PicoZenseManager::setPulseCountWDR(uint32_t pulse_count_range1,
 }
 
 bool PicoZenseManager::getPulseCountWDR(uint32_t &pulse_count_range1,
-                                        uint32_t &pulse_count_range2) {
+                                        uint32_t &pulse_count_range2)
+{
   PsReturnStatus status;
   PsWDRPulseCount pwdrPulseCount;
   status = Ps2_GetWDRPulseCount(deviceHandle, sessionIndex_, &pwdrPulseCount);
-  if (status != PsReturnStatus::PsRetOK) {
+  if (status != PsReturnStatus::PsRetOK)
+  {
     std::cerr << "PsGetWDRPulseCount failed!" << std::endl;
     return false;
   }
@@ -556,30 +690,39 @@ bool PicoZenseManager::getPulseCountWDR(uint32_t &pulse_count_range1,
   return true;
 }
 
-
-bool PicoZenseManager::setDepthRange(std::string given_depth_range) {
+bool PicoZenseManager::setDepthRange(std::string given_depth_range)
+{
   PsDepthRange targetRange;
-  if (given_depth_range == "Near") {
+  if (given_depth_range == "Near")
+  {
     targetRange = PsNearRange;
-  } else if (given_depth_range == "Mid") {
+  }
+  else if (given_depth_range == "Mid")
+  {
     targetRange = PsMidRange;
-  } else if (given_depth_range == "Far") {
+  }
+  else if (given_depth_range == "Far")
+  {
     targetRange = PsFarRange;
-  } else {
+  }
+  else
+  {
     std::cout << "Currently depth range is supported only in [Near, Mid, Far] mode" << std::endl;
     return false;
   }
 
   PsReturnStatus status;
   status = Ps2_SetDepthRange(deviceHandle, sessionIndex_, targetRange);
-  if (status != PsReturnStatus::PsRetOK) {
+  if (status != PsReturnStatus::PsRetOK)
+  {
     std::cerr << "Depth range changing is failed" << std::endl;
     exit(EXIT_FAILURE);
   }
 
   PsDepthRange resetRange;
   status = Ps2_GetDepthRange(deviceHandle, sessionIndex_, &resetRange);
-  if (status != PsReturnStatus::PsRetOK || targetRange != resetRange) {
+  if (status != PsReturnStatus::PsRetOK || targetRange != resetRange)
+  {
     std::cerr << "Depth range changing is failed ()" << std::endl;
     exit(EXIT_FAILURE);
   }
@@ -591,7 +734,8 @@ bool PicoZenseManager::setDepthRange(std::string given_depth_range) {
     std::cout << "Set depth range to Mid," << std::endl;
   else if (targetRange == PsFarRange)
     std::cout << "Set depth range to Far," << std::endl;
-  else {
+  else
+  {
     std::cerr << "Invarid depth range setting detected" << std::endl;
     exit(EXIT_FAILURE);
   }
