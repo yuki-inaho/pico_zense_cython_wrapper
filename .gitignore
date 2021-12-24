@@ -21,7 +21,6 @@ zense_pywrapper.egg-info
 dist/
 build/
 
-example/utils/__init__.pyc
-example/utils/projection_module.pyc
-example/utils/projection_utils.pyc
-example/utils/zense_camera_param.pyc
+*.pyc
+
+PicoZenseSDK_V3

@@ -300,7 +300,7 @@ bool PicoZenseManager::setupDevice(int32_t range1, int32_t range2, bool isRGB)
   }
   else if (isRGB_ && !isRGBIR_)
   {
-    dataMode = PsDepthAndRGB_30;
+    dataMode = PsDepthAndIR_15_RGB_30;
   }
   else if (isRGBIR_)
   {
