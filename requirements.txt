@@ -1,6 +1,6 @@
 numpy==1.16.0
 cython==0.29.20
-opencv-python==4.2.0.32
+opencv-python==4.8.1.78
 pkgconfig==1.5.1
 toml==0.10.1
 cvui==2.7.b1
